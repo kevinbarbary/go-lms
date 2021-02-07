@@ -1,2 +1,2 @@
 # go-lms
-Golang LMS
+A Golang LMS utilising the [Course-Source LMS RESTful API](https://help.course-source.net/rest)
