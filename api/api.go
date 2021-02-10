@@ -104,6 +104,9 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 			log.Print("API Call Error - invalid response from GET... ", err.Error())
 			return "", err
 		}
+		if resp.StatusCode != 200 {
+			log.Print(utils.Concat("API Call GET ", endpoint, " status... "), resp.StatusCode)
+		}
 
 		defer resp.Body.Close()
 
@@ -143,6 +146,9 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		if err != nil {
 			log.Print("API Call Error - invalid response from POST... ", err.Error())
 			return "", err
+		}
+		if resp.StatusCode != 200 {
+			log.Print(utils.Concat("API Call POST ", endpoint, " status... "), resp.StatusCode)
 		}
 
 		defer resp.Body.Close()
