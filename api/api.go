@@ -51,6 +51,13 @@ func (j JsonDate) ToDate() string {
 	return j.Format("2006-01-02")
 }
 
+func (j JsonDate) EndOf() time.Time {
+	// returns the start of the next day after j, i.e. midnight...
+	// convert j to date (remove the time), add one day then return the result as time.Time
+	j1 := j.ToTime()
+	return time.Date(j1.Year(), j1.Month(), j1.Day(), 0, 0, 0, 0, j1.Location()).AddDate(0, 0, 1)
+}
+
 func Creds(site, key string) (Params, error) {
 	return Params{"SiteID": site, "SiteKey": key}, nil
 }
@@ -182,15 +189,12 @@ func (t Timestamp) ToDatetime() string {
 	return t.ToTime().Format("2006-01-02 15:04:05")
 }
 
-func (t Timestamp) BeforeEnd(d JsonDate) bool {
-	// returns if t is before the end of d, i.e. t < (d + 1 day)
+func (t Timestamp) BeforeEnd(j JsonDate) bool {
+	// returns if t is before the end of j, i.e. t < (j + 1 day)
+	return t.ToTime().Before(j.EndOf())
+}
 
-	// convert t to time.Time (t is already a date) -> t2
-	// convert d to date and add one day then convert to time.Time -> d2
-	// return t2 < d2
-
-	d1 := d.ToTime()
-	d2 := time.Date(d1.Year(), d1.Month(), d1.Day(), 0, 0, 0, 0, d1.Location()).AddDate(0, 0, 1)
-
-	return t.ToTime().Before(d2)
+func (t Timestamp) Until(j JsonDate) time.Duration {
+	// returns the duration between t and the end of d, assumes less than a year
+	return j.EndOf().Sub(t.ToTime())
 }
