@@ -9,6 +9,7 @@ import (
 
 func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
+	http.HandleFunc("/sign-out", signOut)
 	http.HandleFunc("/", route)
 	http.ListenAndServe(":8888", nil)
 }
@@ -23,8 +24,6 @@ func route(w http.ResponseWriter, r *http.Request) {
 		}
 	case "/sign-in":
 		signIn(w, r, "")
-	case "/sign-out":
-		signOut(w, r)
 	default:
 		path := route[1:]
 		id, e := strconv.Atoi(path)
