@@ -106,7 +106,7 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		status = "Incomplete"
 	}
 
-	return utils.Concat(`<div class="enrol-row" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, course, `</div><div class="status">`, status, `</div><div class="expires">`, expires, `</div><div class="enrol-start">`, enrol.StartDate.ToDate(), `</div><div class="enrol-end">`, enrol.EndDate.ToDate(), `</div></div></div>`)
+	return utils.Concat(`<div class="enrol-row" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, course, `</div><div class="status">`, status, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
 }
 
 func htmlEnrolEnd() string {
