@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/", route)
 	http.ListenAndServe(":8888", nil)
 }

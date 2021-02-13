@@ -29,31 +29,7 @@ func head(w http.ResponseWriter, title string) string {
 	}
 	return utils.Concat(`<head>
 <title>`, page, `</title>
-<style type="text/css">
-body {
-	font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-.breadcrumb {
-	font-size: xx-small;
-}
-.message {
-	font-size: x-large;
-}
-.enrol-row {
-	clear: both;
-}
-.enrol {
-	display: grid;
-}
-.title {
-	font-size: larger;
-}
-.logo {
-	display: grid;
-	float: left;
-	margin-right: 10px;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="assets/css/custom.css?v=`, utils.Assets("CSS"), `">
 </head>
 `)
 }
