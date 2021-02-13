@@ -3,58 +3,60 @@ package main
 import (
 	"./api"
 	"./utils"
-	"io"
+	"html/template"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 )
 
-func html(w http.ResponseWriter, r *http.Request, user, title, breadcrumb, content string) {
-	var html = "<!DOCTYPE html>"
-	html = utils.Concat(html, "<html>")
-	html = utils.Concat(html, head(w, title))
-	html = utils.Concat(html, body(w, r, title, breadcrumb, user, content))
-	html = utils.Concat(html, "</html>")
-	io.WriteString(w, html)
-}
+func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, content string) {
 
-func head(w http.ResponseWriter, title string) string {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	page := "LMS - "
-	if title == "" {
-		page = utils.Concat(page, "home")
+	title := "LMS - "
+	if header == "" {
+		title = utils.Concat(title, "home")
 	} else {
-		page = utils.Concat(page, title)
+		title = utils.Concat(title, header)
 	}
-	return utils.Concat(`<head>
-<title>`, page, `</title>
-<link rel="stylesheet" type="text/css" href="assets/css/custom.css?v=`, utils.Assets("CSS"), `">
-</head>
-`)
-}
 
-func body(w http.ResponseWriter, r *http.Request, title, breadcrumb, user, content string) string {
-	var html = "<body>"
-	html = utils.Concat(html, `<p class="breadcrumb">You are here: `, breadcrumb, "</p>")
+	var menu string
 	if user == "" {
-		html = utils.Concat(html, "<p>", utils.Hyper("/", "Sign In"), "</p>")
+		menu = utils.Hyper("/", "Sign In")
 	} else if user == api.TokenUser() {
-		html = utils.Concat(html, "<p>", utils.Hyper("/sign-out", "Sign out"), "</p>")
+		menu = utils.Hyper("/sign-out", "Sign out")
 	} else {
-		html = utils.Concat(html, "<p>", utils.Hyper("/sign-out", utils.Concat("Sign out: ", user)), "</p>")
+		menu = utils.Hyper("/sign-out", utils.Concat("Sign out: ", user))
 	}
-	html = utils.Concat(html, "<h1>", title, "</h1>")
+
+	var body string
 	if message := GetMessage(r); message != "" {
-		html = utils.Concat(html, `<p class="message">`, message, `</p>`)
+		body = utils.Concat(body, `<p class="message">`, message, `</p>`)
 		UnsetMessage(w)
 	}
-	html = utils.Concat(html, content)
+	body = utils.Concat(body, content)
 
-	// @todo - add footer here
+	// @todo - add footer
 
-	html = utils.Concat(html, "</body>")
-	return html
+	data := struct {
+		Title      string
+		Css        string
+		Breadcrumb template.HTML
+		Menu       template.HTML
+		Header     string
+		Content    template.HTML
+	}{
+		title,
+		utils.Assets("CSS"),
+		template.HTML(utils.Concat("You are here: ", breadcrumb)),
+		template.HTML(menu),
+		header,
+		template.HTML(body),
+	}
+
+	tmpl := template.Must(template.ParseFiles("assets/templates/index.html"))
+	if err := tmpl.ExecuteTemplate(w, "index.html", data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 type crumb struct {
