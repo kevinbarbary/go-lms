@@ -2,8 +2,15 @@ body {
     font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.breadcrumb {
+#breadcrumb {
+    display: inline-block;
+    --bs-breadcrumb-divider: '>';
+}
+.breadcrumb-trail {
     font-size: xx-small;
+}
+.breadcrumb-prefix {
+    margin-right: 0.5rem;
 }
 
 .message {

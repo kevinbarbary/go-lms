@@ -47,7 +47,7 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 	}{
 		title,
 		utils.Assets("CSS"),
-		template.HTML(utils.Concat("You are here: ", breadcrumb)),
+		template.HTML(utils.Concat(`<span class="breadcrumb-trail breadcrumb-prefix">You are here:</span>`, breadcrumb)),
 		template.HTML(menu),
 		header,
 		template.HTML(body),
@@ -67,12 +67,12 @@ func breadcrumbTrail(list []crumb) string {
 	var trail = make([]string, len(list))
 	for i, current := range list {
 		if current.link == "" {
-			trail[i] = current.title
+			trail[i] = utils.Concat(`<li class="breadcrumb-item active" aria-current="page">`, current.title, `</li>`)
 		} else {
-			trail[i] = utils.Hyper(current.link, current.title)
+			trail[i] = utils.Concat(`<li class="breadcrumb-item">`, utils.Hyper(current.link, current.title), `</li>`)
 		}
 	}
-	return utils.Concat(`<span class="crumb">`, strings.Join(trail, `</span> &rarr; <span class="crumb">`), `</span>`)
+	return utils.Concat(`<nav class="breadcrumb-trail" id="breadcrumb" aria-label="breadcrumb"><ol class="breadcrumb">`, strings.Join(trail, ""), `</ol></nav>`)
 }
 
 func htmlEnrolStart() string {
