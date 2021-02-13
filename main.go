@@ -3,6 +3,7 @@ package main
 import (
 	"./api"
 	"./utils"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -11,7 +12,9 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/sign-out", signOut)
 	http.HandleFunc("/", route)
-	http.ListenAndServe(":8888", nil)
+	if err := http.ListenAndServe(":8888", nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func route(w http.ResponseWriter, r *http.Request) {
