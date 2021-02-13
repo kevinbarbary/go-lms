@@ -35,12 +35,12 @@ func FormatUntil(t time.Duration) string {
 			// between 1 hour and one day
 			if h == 1 {
 				if m == 1 {
-					return fmt.Sprintf("%2d hour, %2d minute", h, m)
+					return fmt.Sprintf("1 hour, 1 minute", h, m)
 				}
-				return fmt.Sprintf("%2d hour, %2d minutes", h, m)
+				return fmt.Sprintf("1 hour, %2d minutes", h, m)
 			}
 			if m == 1 {
-				return fmt.Sprintf("%2d hours, %2d minute", h, m)
+				return fmt.Sprintf("%2d hours, 1 minute", h, m)
 			}
 			return fmt.Sprintf("%2d hours, %2d minutes", h, m)
 		}
