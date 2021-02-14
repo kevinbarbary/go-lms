@@ -18,6 +18,10 @@ func Hyper(path, page string) string {
 	return Concat(`<a href="`, path, `">`, page, `</a>`)
 }
 
+func HyperClass(path, page, class string) string {
+	return Concat(`<a class="`, class, `" href="`, path, `">`, page, `</a>`)
+}
+
 func FormatUntil(t time.Duration) string {
 	t = t.Round(time.Minute)
 	h := t / time.Hour

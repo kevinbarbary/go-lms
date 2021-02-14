@@ -86,27 +86,35 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		logo = utils.Concat(`<img src="`, enrol.PublisherLogo, `" alt="`, enrol.Publisher, `">`)
 	}
 
-	var enrolStr, course, expires string
+	var completeStatus, completeClass string
+	if enrol.Completed {
+		completeStatus = "Completed"
+		completeClass = " completed"
+	} else {
+		completeStatus = "Incomplete"
+		completeClass = " incomplete"
+	}
+
+	hyper := false
+	var enrolStr, expires, expiryClass string
 	enrolStr = strconv.Itoa(enrol.EnrollID)
 	if enrol.EnrollStatus.Enabled() && now.BeforeEnd(enrol.EndDate) {
 		// active
-		course = utils.Hyper(utils.Concat("/", enrolStr), enrol.CourseTitle)
-		//expires = fmt.Sprintf("Expires in %v", now.Until(enrol.EndDate))
 		expires = utils.Concat("Expires in ", utils.FormatUntil(now.Until(enrol.EndDate)))
+		hyper = true
 	} else {
 		// expired, pending, etc.
-		course = enrol.CourseTitle
 		expires = "Expired"
+		expiryClass = " expired"
 	}
 
-	var status string
-	if enrol.Completed {
-		status = "Completed"
-	} else {
-		status = "Incomplete"
+	row := utils.Concat(`<div class="border p-3 mb-4`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
+
+	if hyper {
+		return utils.HyperClass(utils.Concat("/", enrolStr), row, "enrol-row")
 	}
 
-	return utils.Concat(`<div class="enrol-row" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, course, `</div><div class="status">`, status, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
+	return utils.Concat(`<div class="enrol-row">`, row, `</div>`)
 }
 
 func htmlEnrolEnd() string {

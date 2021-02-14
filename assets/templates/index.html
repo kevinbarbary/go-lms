@@ -7,9 +7,11 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/custom.css?v={{ .Css }}">
 </head>
 <body>
-{{ .Breadcrumb }}
-<p class="menu">{{ .Menu }}</p>
-<h1>{{ .Header }}</h1>
-{{ .Content }}
+    <div class="container my-4">
+        {{ .Breadcrumb }}
+        <p class="menu">{{ .Menu }}</p>
+        <h1>{{ .Header }}</h1>
+        {{ .Content }}
+    </div>
 </body>
 </html>

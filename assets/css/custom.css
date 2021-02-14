@@ -17,8 +17,39 @@ body {
     font-size: x-large;
 }
 
-.enrol-row {
-    clear: both;
+.enrol-row .border {
+    border-radius: .25rem;
+}
+.enrol-row .completed .status {
+    color: forestgreen;
+}
+a.enrol-row {
+    text-decoration: none;
+    color: initial;
+}
+a.enrol-row .border:hover {
+    box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+}
+.enrol-row .expired {
+    color: #bbbbbb;
+    cursor: not-allowed;
+}
+.enrol-row .expired img {
+    opacity: 0.2;
+}
+.enrol-row .incomplete .status {
+    color: tomato;
+}
+.enrol-row .completed .enrol-start,
+.enrol-row .completed .expires {
+    color: #bbbbbb;
+}
+.enrol-row .completed.expired .status {
+    color: darkseagreen;
+}
+.enrol-row .incomplete.expired .enrol div,
+.enrol-row .completed.expired .expires {
+    color: lightpink;
 }
 
 .enrol {
