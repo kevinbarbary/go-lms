@@ -18,8 +18,12 @@ func Hyper(path, page string) string {
 	return Concat(`<a href="`, path, `">`, page, `</a>`)
 }
 
-func HyperClass(path, page, class string) string {
-	return Concat(`<a class="`, class, `" href="`, path, `">`, page, `</a>`)
+func HyperClass(path, page, class, role string) string {
+	var roleStr string
+	if role != "" {
+		roleStr = Concat(` role="`, role, `"`)
+	}
+	return Concat(`<a class="`, class, `" href="`, path, `"`, roleStr, `>`, page, `</a>`)
 }
 
 func FormatUntil(t time.Duration) string {

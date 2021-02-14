@@ -20,17 +20,23 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 	}
 
 	var menu string
+	class := "btn btn-primary btn-sm"
 	if user == "" {
-		menu = utils.Hyper("/", "Sign In")
+		if header != "Sign In" {
+			menu = utils.HyperClass("/", "Sign In", class, "button")
+		}
 	} else if user == api.TokenUser() {
-		menu = utils.Hyper("/sign-out", "Sign out")
+		menu = utils.HyperClass("/sign-out", "Sign out", class, "button")
 	} else {
-		menu = utils.Hyper("/sign-out", utils.Concat("Sign out: ", user))
+		menu = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class, "button")
+	}
+	if menu != "" {
+		menu = utils.Concat(`<p class="menu">`, menu, `</p>`)
 	}
 
 	var body string
-	if message := GetMessage(r); message != "" {
-		body = utils.Concat(body, `<p class="message">`, message, `</p>`)
+	if message, kind := GetMessage(r); message != "" {
+		body = utils.Concat(body, StyleMessage(message, kind))
 		UnsetMessage(w)
 	}
 	body = utils.Concat(body, content)
@@ -108,10 +114,10 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		expiryClass = " expired"
 	}
 
-	row := utils.Concat(`<div class="border p-3 mb-4`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
+	row := utils.Concat(`<div class="border p-3 mb-3`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
 
 	if hyper {
-		return utils.HyperClass(utils.Concat("/", enrolStr), row, "enrol-row")
+		row = utils.Hyper(utils.Concat("/", enrolStr), row)
 	}
 
 	return utils.Concat(`<div class="enrol-row">`, row, `</div>`)

@@ -31,7 +31,7 @@ func error404(w http.ResponseWriter, r *http.Request) {
 
 	var home string
 	if user == "" {
-		home = "Sign-in"
+		home = "Sign In"
 	} else {
 		home = "Enrolments"
 	}

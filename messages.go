@@ -16,19 +16,29 @@ var messages = map[int]string{
 	3: "You are now signed-in",
 }
 
-func GetMessage(r *http.Request) string {
+var kinds = map[int]string{
+	1: "success",
+	2: "danger",
+	3: "success",
+}
+
+func GetMessage(r *http.Request) (string, string) {
 	cookie, err := utils.GetCookieValue(r, "msg")
 	if err != nil {
-		return ""
+		return "", ""
 	}
 	i, err := strconv.Atoi(cookie)
 	if err != nil {
-		return ""
+		return "", ""
 	}
 	if max := len(messages); i > max {
-		return ""
+		return "", ""
 	}
-	return messages[i]
+	return messages[i], kinds[i]
+}
+
+func StyleMessage(message, kind string) string {
+	return utils.Concat(`<div class="alert alert-`, kind, ` alert-dismissible fade show" role="alert">`, message, `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`)
 }
 
 func SetMessage(w http.ResponseWriter, i int) {

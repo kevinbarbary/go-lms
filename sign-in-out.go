@@ -15,7 +15,7 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 	if name == "" && pass == "" {
 		content = formSignIn("", "", path)
 		if r.Method == "POST" {
-			content = utils.Concat(`<p class="message">Enter credentials and try again</p>`, content)
+			content = utils.Concat(StyleMessage("Enter credentials and try again", "danger"), content)
 		}
 	} else {
 
@@ -29,11 +29,11 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 		}
 
 		user = u
-		content = utils.Concat(`<p class="message">Sign in failed</p>`, formSignIn(name, pass, r.FormValue("path")))
+		content = utils.Concat(StyleMessage("Sign in failed", "danger"), formSignIn(name, pass, r.FormValue("path")))
 	}
 
-	breadcrumb := breadcrumbTrail([]crumb{{"Sign-In", ""}})
-	html(w, r, user, "Sign-In", breadcrumb, content)
+	breadcrumb := breadcrumbTrail([]crumb{{"Sign In", ""}})
+	html(w, r, user, "Sign In", breadcrumb, content)
 }
 
 func signOut(w http.ResponseWriter, r *http.Request) {
@@ -60,14 +60,12 @@ func formSignIn(username, password, path string) string {
 	if password != "" {
 		pass = utils.Concat(` value="`, password, `"`)
 	}
-	return utils.Concat(`<form method="post">
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username"`, user, `>
-	<br />
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password"`, pass, `>
-	<br />
-	<input type="hidden" id="path" name="path" value="`, path, `">
-    <button type="submit">Sign in</button>
-</form>`)
+	return utils.Concat(`    <form class="form-sign-in" method="post">
+      	<label for="username" class="sr-only">Username</label>
+      	<input type="text" id="username" name="username" class="form-control" placeholder="Username" autofocus`, user, `>
+      	<label for="password" class="sr-only">Password</label>
+      	<input type="password" id="password" name="password" class="form-control" placeholder="Password"`, pass, `>
+		<input type="hidden" id="path" name="path" value="`, path, `">
+      	<div class="d-grid gap-2"><button class="btn btn-lg btn-primary" type="submit">Sign in</button></div>
+    </form>`)
 }

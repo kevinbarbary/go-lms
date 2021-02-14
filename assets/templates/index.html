@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <title>{{ .Title }}</title>
     <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/sr-only.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/custom.css?v={{ .Css }}">
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <div class="container my-4">
         {{ .Breadcrumb }}
-        <p class="menu">{{ .Menu }}</p>
+        {{ .Menu }}
         <h1>{{ .Header }}</h1>
         {{ .Content }}
     </div>
