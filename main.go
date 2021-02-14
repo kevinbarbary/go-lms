@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+const SIGN_IN = "Sign In"
+
 func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 	http.HandleFunc("/sign-out", signOut)

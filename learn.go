@@ -82,7 +82,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 				var home string
 				user = api.GetSignedInTokenFlag(token)
 				if user == "" {
-					home = "Sign In"
+					home = SIGN_IN
 				} else {
 					home = "Enrolments"
 				}

@@ -32,8 +32,8 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 		content = utils.Concat(StyleMessage("Sign in failed", "danger"), formSignIn(name, pass, r.FormValue("path")))
 	}
 
-	breadcrumb := breadcrumbTrail([]crumb{{"Sign In", ""}})
-	html(w, r, user, "Sign In", breadcrumb, content)
+	breadcrumb := breadcrumbTrail([]crumb{{SIGN_IN, ""}})
+	html(w, r, user, SIGN_IN, breadcrumb, content)
 }
 
 func signOut(w http.ResponseWriter, r *http.Request) {

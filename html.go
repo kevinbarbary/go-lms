@@ -12,6 +12,11 @@ import (
 
 func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, content string) {
 
+	var css string
+	if header == SIGN_IN {
+		css = `<link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">`
+	}
+
 	title := "LMS - "
 	if header == "" {
 		title = utils.Concat(title, "home")
@@ -22,8 +27,8 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 	var menu string
 	class := "btn btn-primary btn-sm"
 	if user == "" {
-		if header != "Sign In" {
-			menu = utils.HyperClass("/", "Sign In", class, "button")
+		if header != SIGN_IN {
+			menu = utils.HyperClass("/", SIGN_IN, class, "button")
 		}
 	} else if user == api.TokenUser() {
 		menu = utils.HyperClass("/sign-out", "Sign out", class, "button")
@@ -45,13 +50,15 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 
 	data := struct {
 		Title      string
-		Css        string
+		Css        template.HTML
+		Version    string
 		Breadcrumb template.HTML
 		Menu       template.HTML
 		Header     string
 		Content    template.HTML
 	}{
 		title,
+		template.HTML(css),
 		utils.Assets("CSS"),
 		template.HTML(utils.Concat(`<span class="breadcrumb-trail breadcrumb-prefix">You are here:</span>`, breadcrumb)),
 		template.HTML(menu),
@@ -109,7 +116,7 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		expires = utils.Concat("Expires in ", utils.FormatUntil(now.Until(enrol.EndDate)))
 		hyper = true
 		if enrol.Completed {
-			completeStatus = `<span class="badge bg-success">Completed</span>`
+			completeStatus = `<span class="badge rounded-pill bg-success">Completed</span>`
 		}
 	} else {
 		// expired, pending, etc.
@@ -138,7 +145,7 @@ func tutorialsHTML(data api.UserEnrolment) string {
 		}
 		for _, tutorial := range lesson.Tutorials {
 			if tutorial.Completed {
-				completeStr = `<span class="badge bg-success">Completed</span>`
+				completeStr = `<span class="badge rounded-pill bg-success">Completed</span>`
 			} else {
 				completeStr = ""
 			}
