@@ -14,24 +14,27 @@ body {
     margin-right: 0.5rem;
 }
 
-.message {
-    font-size: x-large;
-}
-
-.enrol-row {
+.enrol-row,
+.tutorial-row {
     background-color: white;
 }
-.enrol-row .border {
+.enrol-row .border,
+.tutorial-row .border {
     border-radius: .25rem;
 }
 .enrol-row .completed .status {
     color: forestgreen;
 }
-.enrol-row a {
+.enrol-row .completed .status .badge {
+    font-size: initial;
+}
+.enrol-row a,
+.tutorial-row a {
     text-decoration: none;
     color: initial;
 }
-.enrol-row a .border:hover {
+.enrol-row a .border:hover,
+.tutorial-row a .border:hover {
     box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
 }
 .enrol-row .expired {

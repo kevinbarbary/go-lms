@@ -108,6 +108,9 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		// active
 		expires = utils.Concat("Expires in ", utils.FormatUntil(now.Until(enrol.EndDate)))
 		hyper = true
+		if enrol.Completed {
+			completeStatus = `<span class="badge bg-success">Completed</span>`
+		}
 	} else {
 		// expired, pending, etc.
 		expires = "Expired"
@@ -128,11 +131,18 @@ func htmlEnrolEnd() string {
 }
 
 func tutorialsHTML(data api.UserEnrolment) string {
-	var html string
+	var html, completeStr string
 	for _, lesson := range data.Lessons {
-		html = utils.Concat(html, "<h2>", lesson.Title, "</h2>")
+		if lesson.Title != data.CourseTitle {
+			html = utils.Concat(html, "<h2>", lesson.Title, "</h2>")
+		}
 		for _, tutorial := range lesson.Tutorials {
-			html = utils.Concat(html, `<div class="tutorial-row">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), tutorial.TutorialTitle), `</div>`)
+			if tutorial.Completed {
+				completeStr = `<span class="badge bg-success">Completed</span>`
+			} else {
+				completeStr = ""
+			}
+			html = utils.Concat(html, `<div class="tutorial-row">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, completeStr, `</div></div>`)), `</div>`)
 		}
 	}
 	return html
