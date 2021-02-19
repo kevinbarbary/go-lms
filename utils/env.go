@@ -19,7 +19,15 @@ func Domain() string {
 	if err != nil {
 		log.Print("Error loading .env file in get Domain()")
 	}
-	return os.Getenv("Domain")
+	return Concat(os.Getenv("Domain"), ":", os.Getenv("Port"))
+}
+
+func Logo() (string, string) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("Error loading .env file in get Logo()")
+	}
+	return os.Getenv("SiteLogo"), os.Getenv("SiteName")
 }
 
 func Endpoint(path string) string {

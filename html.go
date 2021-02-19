@@ -24,19 +24,22 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 		title = utils.Concat(title, header)
 	}
 
+	// modal test...
 	var menu string
-	class := "btn btn-primary btn-sm"
-	if user == "" {
-		if header != SIGN_IN {
-			menu = utils.HyperClass("/", SIGN_IN, class, "button")
+	if user != "*" { // don't show the menu
+		class := "btn btn-primary btn-sm"
+		if user == "" {
+			if header != SIGN_IN {
+				menu = utils.HyperClass("/", SIGN_IN, class, "button")
+			}
+		} else if user == api.TokenUser() {
+			menu = utils.HyperClass("/sign-out", "Sign out", class, "button")
+		} else {
+			menu = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class, "button")
 		}
-	} else if user == api.TokenUser() {
-		menu = utils.HyperClass("/sign-out", "Sign out", class, "button")
-	} else {
-		menu = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class, "button")
-	}
-	if menu != "" {
-		menu = utils.Concat(`<p class="menu">`, menu, `</p>`)
+		if menu != "" {
+			menu = utils.Concat(`<p class="menu">`, menu, `</p>`)
+		}
 	}
 
 	var body string
@@ -46,6 +49,17 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 	}
 	body = utils.Concat(body, content)
 
+	var logo, name string
+	if logo, name = utils.Logo(); logo != "" {
+		if name == "" {
+			logo = utils.Concat(`<img src="`, logo, `" alt="logo">`)
+		} else {
+			logo = utils.Concat(`<img src="`, logo, `" alt="`, name, `">`)
+		}
+	} else if name != "" {
+		logo = utils.Concat(`<mark>`, name, `</mark>`)
+	}
+
 	// @todo - add footer
 
 	data := struct {
@@ -53,6 +67,7 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 		Css        template.HTML
 		Version    string
 		Breadcrumb template.HTML
+		Logo       template.HTML
 		Menu       template.HTML
 		Header     string
 		Content    template.HTML
@@ -61,6 +76,7 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 		template.HTML(css),
 		utils.Assets("CSS"),
 		template.HTML(utils.Concat(`<span class="breadcrumb-trail breadcrumb-prefix">You are here:</span>`, breadcrumb)),
+		template.HTML(logo),
 		template.HTML(menu),
 		header,
 		template.HTML(body),
@@ -139,6 +155,9 @@ func htmlEnrolEnd() string {
 
 func tutorialsHTML(data api.UserEnrolment) string {
 	var html, completeStr string
+
+	// modal test...
+	var lastUrl string
 	for _, lesson := range data.Lessons {
 		if lesson.Title != data.CourseTitle {
 			html = utils.Concat(html, "<h2>", lesson.Title, "</h2>")
@@ -149,8 +168,36 @@ func tutorialsHTML(data api.UserEnrolment) string {
 			} else {
 				completeStr = ""
 			}
-			html = utils.Concat(html, `<div class="tutorial-row">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, completeStr, `</div></div>`)), `</div>`)
+			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, completeStr, `</div></div>`)), `</div>`)
+
+			// modal test...
+			lastUrl = tutorial.LaunchURL
+
 		}
 	}
+
+	// modal test...
+	html = utils.Concat(html, `
+<a href="#" class="btn btn-warning" id="launch4" data-bs-toggle="modal" data-bs-target="#exampleModal" data-url="`, utils.Concat(lastUrl, "&returnHTTP=1&forceExit=0&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/parent/")), strconv.Itoa(data.EnrollID)), `">
+PLAY
+</a>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-fullscreen">
+   <div class="modal-content">
+     <div class="modal-body">
+       <iframe frameborder="0" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+     </div>
+   </div>
+ </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script type="text/javascript">
+$("#launch4").click(function () {
+  var theModal = $(this).data("bs-target");
+  $(theModal + ' iframe').attr('src', $(this).attr("data-url"));
+});
+</script>`)
+
 	return html
 }

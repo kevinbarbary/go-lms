@@ -12,7 +12,8 @@
 </head>
 <body>
     <div class="container my-4">
-        {{ .Breadcrumb }}
+        <div id="breadcrumb-container">{{ .Breadcrumb }}</div>
+        <div id="logo-container" class="mb-4">{{ .Logo }}</div>
         {{ .Menu }}
         <h1>{{ .Header }}</h1>
         {{ .Content }}
