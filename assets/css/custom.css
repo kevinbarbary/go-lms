@@ -3,13 +3,21 @@ body {
     background-color: #f5f5f5;
 }
 
+#header {
+    overflow: auto;
+}
+#header h1 {
+    width: 100%;
+    display: inline-block;
+}
+
 #breadcrumb-container,
+#breadcrumb,
 #logo-container {
     display: inline-block;
 }
 
 #breadcrumb {
-    display: inline-block;
     --bs-breadcrumb-divider: '>';
 }
 .breadcrumb-trail {

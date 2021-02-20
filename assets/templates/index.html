@@ -11,12 +11,16 @@
     <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <div class="container my-4">
-        <div id="breadcrumb-container">{{ .Breadcrumb }}</div>
-        <div id="logo-container" class="mb-4">{{ .Logo }}</div>
-        {{ .Menu }}
-        <h1>{{ .Header }}</h1>
-        {{ .Content }}
+    <div id="page" class="container my-4">
+        <div id="header" class="mb-3">
+            <div id="breadcrumb-container">{{ .Breadcrumb }}</div>
+            <div id="logo-container">{{ .Logo }}</div>
+            {{ .Menu }}
+            <h1 class="mb-0">{{ .Header }}</h1>
+        </div>
+        <div id="content">
+            {{ .Content }}
+        </div>
     </div>
 </body>
 </html>
