@@ -194,7 +194,7 @@ func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
 		}
 	}
 
-	// modal WIP...
+	// WIP: launch in modal...
 	var modalContinue string
 	if !lastAccessed.NotSet() {
 		modalContinue = utils.Concat(`
