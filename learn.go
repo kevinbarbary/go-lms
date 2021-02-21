@@ -101,7 +101,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 
 		}
 
-		html(w, r, user, title, breadcrumb, content)
+		html(w, r, user, page{LEARN, title}, breadcrumb, content)
 	}
 }
 

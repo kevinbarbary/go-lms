@@ -9,6 +9,10 @@ import (
 )
 
 const SIGN_IN = "Sign In"
+const LEARN = "Enrolments"
+const COURSES = "Courses"
+const ERROR = "Error"
+const PLAIN = "Plain"
 
 func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
@@ -42,7 +46,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 			if path[0:6] == "parent" {
 				_, e := strconv.Atoi(path[7:])
 				if e == nil {
-					html(w, r, "*", "Please wait...", "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
+					html(w, r, "", page{PLAIN, "Please wait..."}, "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
 					return
 				}
 
@@ -55,11 +59,8 @@ func route(w http.ResponseWriter, r *http.Request) {
 		if e == nil {
 			if api.CheckSignedIn(r) {
 				learn(w, r, id)
-				// modal test...
 				return
 			}
-
-			// modal test...
 			signIn(w, r, path)
 			return
 		}

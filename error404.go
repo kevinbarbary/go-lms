@@ -36,5 +36,5 @@ func error404(w http.ResponseWriter, r *http.Request) {
 		home = "Enrolments"
 	}
 	breadcrumb := breadcrumbTrail([]crumb{{home, "/"}, {"Page Not Found", ""}})
-	html(w, r, user, "Page Not Found", breadcrumb, utils.Concat(`<p>`, message, `</p>`))
+	html(w, r, user, page{ERROR, "Page Not Found"}, breadcrumb, utils.Concat(`<p>`, message, `</p>`))
 }

@@ -33,7 +33,7 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 	}
 
 	breadcrumb := breadcrumbTrail([]crumb{{SIGN_IN, ""}})
-	html(w, r, user, SIGN_IN, breadcrumb, content)
+	html(w, r, user, page{SIGN_IN, ""}, breadcrumb, content)
 }
 
 func signOut(w http.ResponseWriter, r *http.Request) {

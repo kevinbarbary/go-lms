@@ -32,5 +32,5 @@ func courses(w http.ResponseWriter, r *http.Request, offset int) {
 		content = utils.Concat(content, `<div class="course col">`, card, `</div>`)
 	}
 
-	html(w, r, user, "Courses", breadcrumb, utils.Concat(`<div id="cards" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3 g-md-2 g-lg-2 g-xl-2 g-xxl-2">`, content, `</div>`))
+	html(w, r, user, page{COURSES, COURSES}, breadcrumb, utils.Concat(`<div id="cards" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3 g-md-2 g-lg-2 g-xl-2 g-xxl-2">`, content, `</div>`))
 }

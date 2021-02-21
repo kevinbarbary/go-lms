@@ -14,35 +14,60 @@ const NOT_STARTED = `<span class="badge rounded-pill bg-secondary">Not Started</
 const STARTED = `<span class="badge rounded-pill bg-warning">Started</span>`
 const COMPLETED = `<span class="badge rounded-pill bg-success">Completed</span>`
 
-func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, content string) {
+type page struct {
+	kind, header string
+}
+
+func html(w http.ResponseWriter, r *http.Request, user string, page page, breadcrumb, content string) {
 
 	var css string
-	if header == SIGN_IN {
+	if page.kind == SIGN_IN {
 		css = `<link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">`
 	}
 
 	title := "LMS - "
-	if header == "" {
+	if page.header == "" {
 		title = utils.Concat(title, "home")
+	} else if page.kind == SIGN_IN {
+		title = utils.Concat(title, SIGN_IN)
 	} else {
-		title = utils.Concat(title, header)
+		title = utils.Concat(title, page.header)
 	}
 
-	var menu string
-	if user != "*" { // don't show the menu
-		class := "btn btn-primary btn-sm"
+	var signInOut, menu, menuSpacing, learnItem, learn, courses string
+
+	switch page.kind {
+	case SIGN_IN:
+		courses = "outline-"
+	case LEARN:
+		courses = "outline-"
+	case COURSES:
+		learn = "outline-"
+	}
+
+	if page.kind != PLAIN {
+		class := "btn btn-outline-primary btn-sm"
 		if user == "" {
-			if header != SIGN_IN {
-				menu = utils.HyperClass("/", SIGN_IN, class, "button")
+			if page.kind != SIGN_IN {
+				signInOut = utils.HyperClass("/", SIGN_IN, class)
+				menuSpacing = " ms-3"
 			}
-		} else if user == api.TokenUser() {
-			menu = utils.HyperClass("/sign-out", "Sign out", class, "button")
 		} else {
-			menu = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class, "button")
+			if page.kind != SIGN_IN {
+				menuSpacing = " ms-3"
+			}
+			if user == api.TokenUser() {
+				signInOut = utils.HyperClass("/sign-out", "Sign out", class)
+			} else {
+				signInOut = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class)
+			}
+			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learn, `primary btn-sm">Learn</a>`)
 		}
-		if menu != "" {
-			menu = utils.Concat(`<p class="menu">`, menu, `</p>`)
-		}
+
+		menu = utils.Concat(`<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,
+			learnItem, `<a href="/courses" class="btn btn-`, courses, `primary btn-sm">Browse</a></div>`)
+
+		menu = utils.Concat(`<div class="menu mb-3">`, signInOut, menu, `</div>`)
 	}
 
 	var body string
@@ -81,7 +106,7 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 		template.HTML(utils.Concat(`<span class="breadcrumb-trail breadcrumb-prefix">You are here:</span>`, breadcrumb)),
 		template.HTML(logo),
 		template.HTML(menu),
-		header,
+		page.header,
 		template.HTML(body),
 	}
 
@@ -151,7 +176,10 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 		statusClass = ""
 	}
 
-	row := utils.Concat(`<div class="border p-3 mb-3`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status`, statusClass, `">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
+	row := utils.Concat(`<div class="border p-3 mb-3`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr,
+		`"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle,
+		`</div><div class="status`, statusClass, `">`, completeStatus, `</div><div class="enrol-start">Start Date: `,
+		enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
 
 	if hyper {
 		row = utils.Hyper(utils.Concat("/", enrolStr), row)
@@ -168,7 +196,11 @@ func progress(total, started, completed int) string {
 	var start, complete = 100 / total * started, 100 / total * completed
 	none := 100 - start - complete
 	startStr, completeStr, noneStr := strconv.Itoa(start), strconv.Itoa(complete), strconv.Itoa(none)
-	return utils.Concat(`<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: `, completeStr, `%;" aria-valuenow="`, completeStr, `" aria-valuemin="0" aria-valuemax="100">`, completeStr, `%</div><div class="progress-bar bg-warning" role="progressbar" style="width: `, startStr, `%;" aria-valuenow="`, startStr, `" aria-valuemin="0" aria-valuemax="100">`, startStr, `%</div><div class="progress-bar bg-secondary" role="progressbar" style="width: `, noneStr, `%;" aria-valuenow="`, noneStr, `" aria-valuemin="0" aria-valuemax="100">`, noneStr, `%</div></div>`)
+	return utils.Concat(`<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: `,
+		completeStr, `%;" aria-valuenow="`, completeStr, `" aria-valuemin="0" aria-valuemax="100">`, completeStr,
+		`%</div><div class="progress-bar bg-warning" role="progressbar" style="width: `, startStr, `%;" aria-valuenow="`,
+		startStr, `" aria-valuemin="0" aria-valuemax="100">`, startStr, `%</div><div class="progress-bar bg-secondary" role="progressbar" style="width: `,
+		noneStr, `%;" aria-valuenow="`, noneStr, `" aria-valuemin="0" aria-valuemax="100">`, noneStr, `%</div></div>`)
 }
 
 func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
@@ -203,7 +235,10 @@ func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
 					status = NOT_STARTED
 				}
 			}
-			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, status, `</div></div>`)), `</div>`)
+			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`,
+				utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")),
+					strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle,
+					`</div><div class="status">`, status, `</div></div>`)), `</div>`)
 		}
 	}
 
@@ -211,7 +246,9 @@ func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
 	var modalContinue string
 	if !lastAccessed.NotSet() {
 		modalContinue = utils.Concat(`
-<a href="#" class="btn btn-primary btn-sm" id="continue" data-bs-toggle="modal" data-bs-target="#exampleModal" data-url="`, utils.Concat(lastUrl, "&returnHTTP=1&forceExit=0&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/parent/")), strconv.Itoa(data.EnrollID)), `">
+<a href="#" class="btn btn-outline-primary btn-sm" id="continue" data-bs-toggle="modal" data-bs-target="#exampleModal" data-url="`,
+			utils.Concat(lastUrl, "&returnHTTP=1&forceExit=0&returnURL=", url.QueryEscape(utils.Concat("//",
+				utils.Domain(), "/parent/")), strconv.Itoa(data.EnrollID)), `">
 Continue
 </a>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
