@@ -15,6 +15,7 @@ import (
 type Timestamp int64
 
 type JsonDate time.Time
+type JsonDateTime time.Time
 
 type Params map[string]string
 
@@ -23,6 +24,31 @@ func MergeParams(a, b Params) Params {
 		a[k] = v
 	}
 	return a
+}
+
+func (j *JsonDateTime) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		return nil
+	}
+	s := strings.Trim(string(b), "\"")
+	t, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return err
+	}
+	*j = JsonDateTime(t)
+	return nil
+}
+
+func (j JsonDateTime) NotSet() bool {
+	return j == JsonDateTime{}
+}
+
+func (j JsonDateTime) ToTime() time.Time {
+	return time.Time(j)
+}
+
+func (j JsonDateTime) After(d JsonDateTime) bool {
+	return j.ToTime().After(d.ToTime())
 }
 
 func (j *JsonDate) UnmarshalJSON(b []byte) error {

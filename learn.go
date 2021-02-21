@@ -74,11 +74,14 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 					} else {
 						breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {enrol.CourseTitle, ""}})
 						title = enrol.CourseTitle
+						var continueModal, continueContent string
 						var tutorials, started, completed int
-						content, tutorials, started, completed = tutorialsHTML(enrol)
+						content, continueModal, tutorials, started, completed = tutorialsHTML(enrol)
+						if continueModal != "" {
+							continueContent = utils.Concat(`<div class="mt-3">`, continueModal, `</div>`)
+						}
 						if tutorials > 1 {
-							content = utils.Concat(`<div class="shadow-lg p-3 mb-3 bg-body rounded"><h5>Progress</h5>`, progress(tutorials, started, completed), `</div>`, content)
-
+							content = utils.Concat(`<div class="shadow-lg p-3 mb-3 bg-light rounded"><h5>Progress</h5>`, progress(tutorials, started, completed), continueContent, `</div>`, content)
 						}
 					}
 				}

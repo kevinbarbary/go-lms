@@ -8,17 +8,17 @@ import (
 )
 
 type userTutorial struct {
-	TutorialID    int    `json:"TutorialID"`
-	TutorialTitle string `json:"TutorialTitle"`
-	LaunchURL     string `json:"LaunchURL"`
-	HighestScore  int    `json:"HighestScore"`
-	Completed     bool   `json:"Completed"`
-	CompletedDate string `json:"CompletedDate"` // date / datetime ?
-	FirstAccessed string `json:"FirstAccessed"` // datetime
-	LastAccessed  string `json:"LastAccessed"`  // datetime
-	TimesAccessed int    `json:"EnrollID"`
-	Height        int    `json:"Height"`
-	Width         int    `json:"Width"`
+	TutorialID    int          `json:"TutorialID"`
+	TutorialTitle string       `json:"TutorialTitle"`
+	LaunchURL     string       `json:"LaunchURL"`
+	HighestScore  int          `json:"HighestScore"`
+	Completed     bool         `json:"Completed"`
+	CompletedDate string       `json:"CompletedDate"` // date / datetime ?
+	FirstAccessed string       `json:"FirstAccessed"` // datetime
+	LastAccessed  JsonDateTime `json:"LastAccessed"`
+	TimesAccessed int          `json:"TimesAccessed"`
+	Height        int          `json:"Height"`
+	Width         int          `json:"Width"`
 }
 
 type userLesson struct {
