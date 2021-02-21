@@ -43,6 +43,9 @@ func html(w http.ResponseWriter, r *http.Request, user string, page page, breadc
 		courses = "outline-"
 	case COURSES:
 		learn = "outline-"
+	case ERROR:
+		learn = "outline-"
+		courses = "outline-"
 	}
 
 	if page.kind != PLAIN {

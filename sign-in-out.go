@@ -66,6 +66,6 @@ func formSignIn(username, password, path string) string {
       	<label for="password" class="sr-only">Password</label>
       	<input type="password" id="password" name="password" class="form-control" placeholder="Password"`, pass, `>
 		<input type="hidden" id="path" name="path" value="`, path, `">
-      	<div class="d-grid gap-2"><button class="btn btn-lg btn-primary" type="submit">Sign in</button></div>
+      	<div class="d-grid gap-2"><button class="btn btn-lg btn-outline-primary" type="submit">Sign in</button></div>
     </form>`)
 }

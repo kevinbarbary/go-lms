@@ -47,8 +47,8 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 
 			} else {
 				user = api.GetSignedInTokenFlag(token)
-				breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {"Error", ""}})
-				title = "Error"
+				breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {ERROR, ""}})
+				title = ERROR
 				content = utils.Concat("<p>", GetError(err), "</p>")
 			}
 
@@ -69,7 +69,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 						// @todo - call /enrolment/history/{LoginID}/{EnrollID}
 
 						breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {"Enrolment not found", ""}})
-						title = "Error"
+						title = ERROR
 						content = "<p>Enrolment not found</p>"
 					} else {
 						breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {enrol.CourseTitle, ""}})
@@ -94,14 +94,21 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 				} else {
 					home = "Enrolments"
 				}
-				breadcrumb = breadcrumbTrail([]crumb{{home, "/"}, {"Error", ""}})
-				title = "Error"
+				breadcrumb = breadcrumbTrail([]crumb{{home, "/"}, {ERROR, ""}})
+				title = ERROR
 				content = utils.Concat("<p>", GetError(err), "</p>")
 			}
 
 		}
 
-		html(w, r, user, page{LEARN, title}, breadcrumb, content)
+		var kind string
+		if title == ERROR {
+			kind = ERROR
+		} else {
+			kind = LEARN
+		}
+
+		html(w, r, user, page{kind, title}, breadcrumb, content)
 	}
 }
 
