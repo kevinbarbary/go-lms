@@ -16,3 +16,7 @@
 
 # Env vars
 .env
+
+# JetBrains IntelliJ IDEA editor
+/.idea/
+/go-lms.iml
