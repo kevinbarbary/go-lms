@@ -55,7 +55,7 @@ body {
 .enrol-row .completed .status {
     color: forestgreen;
 }
-.enrol-row .completed .status .badge {
+.enrol-row .status .badge {
     font-size: initial;
 }
 .enrol-row a,

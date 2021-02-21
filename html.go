@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+const NOT_STARTED = `<span class="badge rounded-pill bg-secondary">Not Started</span>`
+const STARTED = `<span class="badge rounded-pill bg-warning">Started</span>`
+const COMPLETED = `<span class="badge rounded-pill bg-success">Completed</span>`
+
 func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, content string) {
 
 	var css string
@@ -24,7 +28,6 @@ func html(w http.ResponseWriter, r *http.Request, user, header, breadcrumb, cont
 		title = utils.Concat(title, header)
 	}
 
-	// modal test...
 	var menu string
 	if user != "*" { // don't show the menu
 		class := "btn btn-primary btn-sm"
@@ -125,22 +128,30 @@ func htmlEnrolRow(enrol api.UserEnrol, now api.Timestamp) string {
 	}
 
 	hyper := false
-	var enrolStr, expires, expiryClass string
+	var enrolStr, expires, statusClass, expiryClass string
 	enrolStr = strconv.Itoa(enrol.EnrollID)
 	if enrol.EnrollStatus.Enabled() && now.BeforeEnd(enrol.EndDate) {
 		// active
 		expires = utils.Concat("Expires in ", utils.FormatUntil(now.Until(enrol.EndDate)))
 		hyper = true
 		if enrol.Completed {
-			completeStatus = `<span class="badge rounded-pill bg-success">Completed</span>`
+			completeStatus = COMPLETED
+		} else {
+			if enrol.TotalDuration > 0 {
+				completeStatus = STARTED
+			} else {
+				completeStatus = NOT_STARTED
+			}
 		}
+		statusClass = " my-1"
 	} else {
 		// expired, pending, etc.
 		expires = "Expired"
 		expiryClass = " expired"
+		statusClass = ""
 	}
 
-	row := utils.Concat(`<div class="border p-3 mb-3`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
+	row := utils.Concat(`<div class="border p-3 mb-3`, expiryClass, completeClass, `" id="enrol-id-`, enrolStr, `"><div class="logo">`, logo, `</div><div class="enrol"><div class="title">`, enrol.CourseTitle, `</div><div class="status`, statusClass, `">`, completeStatus, `</div><div class="enrol-start">Start Date: `, enrol.StartDate.ToDate(), `</div><div class="expires">`, expires, `</div></div></div>`)
 
 	if hyper {
 		row = utils.Hyper(utils.Concat("/", enrolStr), row)
@@ -154,8 +165,10 @@ func htmlEnrolEnd() string {
 }
 
 func progress(total, started, completed int) string {
-	var start, complete = strconv.Itoa(100 / total * started), strconv.Itoa(100 / total * completed)
-	return utils.Concat(`<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: `, complete, `%;" aria-valuenow="`, complete, `" aria-valuemin="0" aria-valuemax="100">`, complete, `%</div><div class="progress-bar bg-warning" role="progressbar" style="width: `, start, `%;" aria-valuenow="`, start, `" aria-valuemin="0" aria-valuemax="100">`, start, `%</div></div>`)
+	var start, complete = 100 / total * started, 100 / total * completed
+	none := 100 - start - complete
+	startStr, completeStr, noneStr := strconv.Itoa(start), strconv.Itoa(complete), strconv.Itoa(none)
+	return utils.Concat(`<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: `, completeStr, `%;" aria-valuenow="`, completeStr, `" aria-valuemin="0" aria-valuemax="100">`, completeStr, `%</div><div class="progress-bar bg-warning" role="progressbar" style="width: `, startStr, `%;" aria-valuenow="`, startStr, `" aria-valuemin="0" aria-valuemax="100">`, startStr, `%</div><div class="progress-bar bg-secondary" role="progressbar" style="width: `, noneStr, `%;" aria-valuenow="`, noneStr, `" aria-valuemin="0" aria-valuemax="100">`, noneStr, `%</div></div>`)
 }
 
 func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
@@ -181,13 +194,13 @@ func tutorialsHTML(data api.UserEnrolment) (string, string, int, int, int) {
 			tutorials++
 			if tutorial.Completed {
 				completed++
-				status = `<span class="badge rounded-pill bg-success">Completed</span>`
+				status = COMPLETED
 			} else {
 				if tutorial.TimesAccessed > 0 {
 					started++
-					status = `<span class="badge rounded-pill bg-warning">Started</span>`
+					status = STARTED
 				} else {
-					status = ""
+					status = NOT_STARTED
 				}
 			}
 			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, status, `</div></div>`)), `</div>`)
