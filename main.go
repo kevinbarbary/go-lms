@@ -27,10 +27,10 @@ func route(w http.ResponseWriter, r *http.Request) {
 		} else {
 			signIn(w, r, "")
 		}
+
 	case "/sign-in":
 		signIn(w, r, "")
 
-		// courses
 	case "/courses":
 		courses(w, r, 0)
 
