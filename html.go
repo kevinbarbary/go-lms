@@ -153,8 +153,14 @@ func htmlEnrolEnd() string {
 	return "</div>"
 }
 
-func tutorialsHTML(data api.UserEnrolment) string {
-	var html, completeStr string
+func progress(total, started, completed int) string {
+	var start, complete = strconv.Itoa(100 / total * started), strconv.Itoa(100 / total * completed)
+	return utils.Concat(`<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width: `, complete, `%;" aria-valuenow="`, complete, `" aria-valuemin="0" aria-valuemax="100">`, complete, `%</div><div class="progress-bar bg-warning" role="progressbar" style="width: `, start, `%;" aria-valuenow="`, start, `" aria-valuemin="0" aria-valuemax="100">`, start, `%</div></div>`)
+}
+
+func tutorialsHTML(data api.UserEnrolment) (string, int, int, int) {
+	var tutorials, started, completed int
+	var html, status string
 
 	// modal test...
 	var lastUrl string
@@ -163,12 +169,19 @@ func tutorialsHTML(data api.UserEnrolment) string {
 			html = utils.Concat(html, "<h2>", lesson.Title, "</h2>")
 		}
 		for _, tutorial := range lesson.Tutorials {
+			tutorials++
 			if tutorial.Completed {
-				completeStr = `<span class="badge rounded-pill bg-success">Completed</span>`
+				completed++
+				status = `<span class="badge rounded-pill bg-success">Completed</span>`
 			} else {
-				completeStr = ""
+				if tutorial.TimesAccessed > 0 {
+					started++
+					status = `<span class="badge rounded-pill bg-warning">Started</span>`
+				} else {
+					status = ""
+				}
 			}
-			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, completeStr, `</div></div>`)), `</div>`)
+			html = utils.Concat(html, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`, utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")), strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle, `</div><div class="status">`, status, `</div></div>`)), `</div>`)
 
 			// modal test...
 			lastUrl = tutorial.LaunchURL
@@ -199,5 +212,5 @@ $("#launch4").click(function () {
 });
 </script>`)
 
-	return html
+	return html, tutorials, started, completed
 }

@@ -80,6 +80,7 @@ func extract(data string) (interface{}, string, string, Timestamp, string, strin
 	err := json.Unmarshal(jsonData, &resp)
 	if err != nil {
 		log.Print("JSON Extract Error... ", err.Error())
+		log.Print("JSON Response: ", data)
 		return nil, "", "", 0, "", ""
 	}
 

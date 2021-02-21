@@ -11,6 +11,16 @@ body {
     display: inline-block;
 }
 
+.title {
+    font-size: larger;
+}
+
+.logo {
+    display: grid;
+    float: left;
+    margin-right: 10px;
+}
+
 #breadcrumb-container,
 #breadcrumb,
 #logo-container {
@@ -31,6 +41,9 @@ body {
     float: right;
 }
 
+.enrol {
+    display: grid;
+}
 .enrol-row,
 .tutorial-row {
     background-color: white;
@@ -74,18 +87,4 @@ body {
 .enrol-row .incomplete.expired .enrol div,
 .enrol-row .completed.expired .expires {
     color: lightpink;
-}
-
-.enrol {
-    display: grid;
-}
-
-.title {
-    font-size: larger;
-}
-
-.logo {
-    display: grid;
-    float: left;
-    margin-right: 10px;
 }
