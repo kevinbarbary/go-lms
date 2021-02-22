@@ -113,8 +113,30 @@ func extract(data string) (interface{}, string, string, Timestamp, string, strin
 	return resp.Data, resp.Error, resp.Help, resp.Timestamp, resp.Token, resp.User
 }
 
-// @todo - reduce duplication...
 func Call(method, endpoint, token string, payload Params) (string, error) {
+	// Call the Course-Source RESTful API, if the token is unauthorized (e.g. expired) get a new token and repeat the request
+	data, err, code := request(method, endpoint, token, payload)
+	if code == http.StatusUnauthorized {
+		// auth fail - try again with a new token
+		log.Print("API Call unauthorized - trying again with new auth token")
+		var newToken string
+		if newToken, _ = Auth("", ""); token == "" {
+			log.Print("Auth token request failed... ", err.Error())
+			panic(err)
+		}
+		log.Print("New auth token received")
+		data, err, _ = request(method, endpoint, newToken, payload)
+		if err != nil {
+			log.Print("API Call retry fail... ", err.Error())
+			panic(err)
+		}
+		log.Print("API Call retry success")
+	}
+	return data, err
+}
+
+// @todo - reduce duplication...
+func request(method, endpoint, token string, payload Params) (string, error, int) {
 
 	if method == "GET" {
 
@@ -125,7 +147,7 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		request, err := http.NewRequest(method, endpoint, bytes.NewBuffer(nil))
 		if err != nil {
 			log.Print("API GET Request Error... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
 
 		request.Header.Add("Accept", "application/json")
@@ -136,9 +158,9 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		resp, err := client.Do(request)
 		if err != nil {
 			log.Print("API Call Error - invalid response from GET... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			log.Print(utils.Concat("API Call GET ", endpoint, " status... "), resp.StatusCode)
 		}
 
@@ -147,17 +169,17 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Print("API GET Response - no body... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
 
-		return string(body), nil
+		return string(body), nil, resp.StatusCode
 
 	} else if method == "POST" {
 
 		data, err := json.Marshal(payload)
 		if err != nil {
 			log.Print("API Payload Marshall Error... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
 
 		client := http.Client{
@@ -167,7 +189,7 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		request, err := http.NewRequest(method, endpoint, bytes.NewBuffer(data))
 		if err != nil {
 			log.Print("API POST Request Error... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
 
 		request.Header.Add("Accept", "application/json")
@@ -179,9 +201,9 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		resp, err := client.Do(request)
 		if err != nil {
 			log.Print("API Call Error - invalid response from POST... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			log.Print(utils.Concat("API Call POST ", endpoint, " status... "), resp.StatusCode)
 		}
 
@@ -190,14 +212,13 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Print("API POST Response - no body... ", err.Error())
-			return "", err
+			return "", err, http.StatusInternalServerError
 		}
 
-		return string(body), nil
-
+		return string(body), nil, resp.StatusCode
 	}
 
-	return "", nil
+	return "", nil, http.StatusNotImplemented
 }
 
 func (t Timestamp) ToTime() time.Time {
