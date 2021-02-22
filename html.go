@@ -34,18 +34,20 @@ func html(w http.ResponseWriter, r *http.Request, user string, page page, breadc
 		title = utils.Concat(title, page.header)
 	}
 
-	var signInOut, menu, menuSpacing, learnItem, learn, courses string
+	var signInOut, menu, menuSpacing, learnItem, learnOutline, learnDisabled, coursesOutline, coursesDisabled string
 
 	switch page.kind {
 	case SIGN_IN:
-		courses = "outline-"
+		coursesOutline = "outline-"
 	case LEARN:
-		courses = "outline-"
+		coursesOutline = "outline-"
+		learnDisabled = " disabled"
 	case COURSES:
-		learn = "outline-"
+		learnOutline = "outline-"
+		coursesDisabled = " disabled"
 	case ERROR:
-		learn = "outline-"
-		courses = "outline-"
+		learnOutline = "outline-"
+		coursesOutline = "outline-"
 	}
 
 	if page.kind != PLAIN {
@@ -64,11 +66,11 @@ func html(w http.ResponseWriter, r *http.Request, user string, page page, breadc
 			} else {
 				signInOut = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class)
 			}
-			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learn, `primary btn-sm">Learn</a>`)
+			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learnOutline, `primary btn-sm`, learnDisabled, `">Learn</a>`)
 		}
 
 		menu = utils.Concat(`<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,
-			learnItem, `<a href="/courses" class="btn btn-`, courses, `primary btn-sm">Browse</a></div>`)
+			learnItem, `<a href="/courses" class="btn btn-`, coursesOutline, `primary btn-sm`, coursesDisabled, `">Browse</a></div>`)
 
 		menu = utils.Concat(`<div class="menu mb-3">`, signInOut, menu, `</div>`)
 	}
