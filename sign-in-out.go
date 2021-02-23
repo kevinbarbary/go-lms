@@ -37,12 +37,15 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 }
 
 func signOut(w http.ResponseWriter, r *http.Request) {
-	if api.CheckSignedIn(r) {
+
+	token := api.GetTokenIfSignedIn(r)
+	if token != "" {
 
 		// remove the user from the token by calling the auth endpoint without the LoginID and Password
-		token, user := api.Auth("", "")
+		// i.e. get a new token without a user in (also invalidates the session in the current token so any tokens containing the same session can't be used again)
+		newToken, user := api.Unauth(token)
 
-		api.SaveToken(w, token)
+		api.SaveToken(w, newToken)
 		if user == "" {
 			SetMessage(w, SIGNED_OUT)
 		} else {

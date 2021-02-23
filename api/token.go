@@ -95,3 +95,12 @@ func CheckSignedIn(r *http.Request) bool {
 	token, err := utils.GetCookieValue(r, "token")
 	return err == nil && CheckTokenSignedIn(token)
 }
+
+func GetTokenIfSignedIn(r *http.Request) string {
+	// get the current token but only if it contains a user
+	token, err := utils.GetCookieValue(r, "token")
+	if err != nil || !CheckTokenSignedIn(token) {
+		return ""
+	}
+	return token
+}

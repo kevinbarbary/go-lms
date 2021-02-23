@@ -6,6 +6,15 @@ import (
 )
 
 func Auth(username, password string) (string, string) {
+	return authenticate(username, password, "")
+}
+
+func Unauth(token string) (string, string) {
+	// i.e. sign out - remove user from token
+	return authenticate("", "", token)
+}
+
+func authenticate(username, password, token string) (string, string) {
 
 	site, key, err := utils.Creds()
 	if err != nil {
@@ -23,13 +32,13 @@ func Auth(username, password string) (string, string) {
 		payload = MergeParams(payload, Params{"LoginID": username, "Password": password})
 	}
 
-	response, err := Call("POST", utils.Endpoint("/auth"), "", payload)
+	response, err := Call("POST", utils.Endpoint("/auth"), token, payload)
 	if err != nil {
 		log.Print("Auth Error - API call failed... ", err.Error())
 		return "", ""
 	}
 
-	_, e, help, timestamp, token, user := extract(response)
+	_, e, help, timestamp, newToken, user := extract(response)
 	if timestamp == 0 {
 		log.Print("Auth Error - invalid timestamp... ", timestamp)
 		return "", ""
@@ -42,5 +51,5 @@ func Auth(username, password string) (string, string) {
 		return "", ""
 	}
 
-	return token, user
+	return newToken, user
 }
