@@ -49,7 +49,7 @@ type Pagination struct {
 
 type CoursesData struct {
 	Courses    []Course        `json:"Courses"`
-	Tags       []CourseTagType `json:"Tags"`
+	Tags       []CourseTagType `json:"CourseTags"`
 	Publishers []Publisher     `json:"Publishers"`
 	Total      int             `json:"Total"`
 	Previous   Pagination      `json:"Previous"`

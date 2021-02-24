@@ -276,3 +276,10 @@ $("#continue").click(function () {
 
 	return html, modalContinue, tutorials, started, completed
 }
+
+func cbx(id, text, class string) string {
+	return utils.Concat(`<div class="form-check `, class, `">
+  <input class="form-check-input" type="checkbox" value="" id="tag`, id, `">
+  <label class="form-check-label" for="tag`, id, `">`, text, `</label>
+</div>`)
+}

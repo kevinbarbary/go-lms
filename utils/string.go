@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -79,4 +81,13 @@ func FormatUntil(t time.Duration) string {
 		return "1 year"
 	}
 	return fmt.Sprintf("%2d years", y)
+}
+
+func AlphaNumeric(in string) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		log.Print("Error converting to alphanumeric: ", in)
+		return in
+	}
+	return reg.ReplaceAllString(in, "")
 }
