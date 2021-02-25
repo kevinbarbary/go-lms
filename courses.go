@@ -51,24 +51,7 @@ func courses(w http.ResponseWriter, r *http.Request, offset int) {
 
 	content = utils.Concat(tagsFilter, `<div id="cards" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3 g-md-2 g-lg-2 g-xl-2 g-xxl-2">`, content, `</div>`)
 
-	pages := 22 // @todo - fix divide by zero error...
-	//pages := courseData.Total / courseData.Next.Limit
-
-	pagination := utils.Concat(`<nav class="mt-3" aria-label="Page navigation">
-  <ul class="pagination pagination-sm justify-content-center">
-    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>First</span></a></li>
-    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>Previous</span></a></li>
-    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>...</span></a></li>
-    <li class="page-item"><a class="page-link" href="#">11</a></li>
-    <li class="page-item"><a class="page-link" href="#">12</a></li>
-    <li class="page-item disabled active"><a class="page-link" href="#">13</a></li>
-    <li class="page-item"><a class="page-link" href="#">14</a></li>
-    <li class="page-item"><a class="page-link" href="#">15</a></li>
-    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>...</span></a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-    <li class="page-item"><a class="page-link" href="#">Last (`, strconv.Itoa(pages), `)</a></li>
-  </ul>
-</nav>`)
+	pagination := paginate(offset, courseData.Next.Limit, courseData.Total)
 
 	content = utils.Concat(content, pagination)
 

@@ -283,3 +283,102 @@ func cbx(id, text, class string) string {
   <label class="form-check-label" for="tag`, id, `">`, text, `</label>
 </div>`)
 }
+
+func paginate(offset, limit, total int) string {
+
+	// small: 7
+	// _1_ ... _3_ ... _1_
+	// x ... y-1 y y+1 ... z
+	//
+	// 1: (1) 2 3 4 ... 21 22
+	// 2: 1 (2) 3 4 ... 21 22
+	// 3: 1 2 (3) 4 ... 21 22
+	// 4: 1 2 3 (4) 5 ... 22
+	// 5: 1 ... 4 (5) 6 ... 22
+	// -
+	// 18: 1 ... 17 (18) 19 ... 22
+	// 19: 1 ... 18 (19) 20 21 22
+	// 20: 1 2 ... 19 (20) 21 22
+	// 21: 1 2 ... 19 20 (21) 22
+	// 22: 1 2 ... 19 20 21 (22)
+
+	// medium: 11
+	// _2_ ... _5_ ... _2_
+	// x x+1 ... y-2 y-1 y y+1 y+2 ... z-1 z
+	//
+	// 1: (1) 2 3 4 5 6 7 ... 20 21 22
+	// 2: 1 (2) 3 4 5 6 7 ... 20 21 22
+	// 3: 1 2 (3) 4 5 6 7 ... 20 21 22
+	// 4: 1 2 3 (4) 5 6 7 ... 20 21 22
+	// 5: 1 2 3 4 (5) 6 7 ... 20 21 22
+	// 6: 1 2 3 4 5 (6) 7 8 ... 21 22
+	// 7: 1 2 ... 5 6 (7) 8 9 ... 21 22
+	// -
+	// 16: 1 2 ... 14 15 (16) 17 18 ... 21 22
+	// 17: 1 2 ... 15 16 (17) 18 19 20 21 22
+	// 18: 1 2 3 ... 16 17 (18) 19 20 21 22
+	// 19: 1 2 3 ... 16 17 18 (19) 20 21 22
+	// 20: 1 2 3 ... 16 17 18 19 (20) 21 22
+	// 21: 1 2 3 ... 16 17 18 19 20 (21) 22
+	// 22: 1 2 3 ... 16 17 18 19 20 21 (22)
+
+	// large: 15
+	// _3_ ... _7_ ... _3_
+	// x x+1 x+2 ... y-3 y-2 y-1 y y+1 y+2 y+3 ... z-2 z-1 z
+	// etc.
+
+	pages := total / limit
+
+	pad := `
+		<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>...</span></a></li>`
+
+	start := `
+<nav class="mt-3" aria-label="Page navigation">
+	<ul class="pagination pagination-sm justify-content-center">
+		<li class="page-item disabled"><a class="page-link" href="#" tabindex="1" aria-disabled="true"><span>1</span></a></li>`
+
+	//smallLow := ``
+
+	mediumLow := `
+		<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>2</span></a></li>`
+
+	// replace pad:
+	//smallBefore
+	//// either ... or Low+1
+	//mediumBefore
+
+	smallPre := ``
+
+	mediumPre := `
+		<li class="page-item"><a class="page-link" href="#">11</a></li>`
+
+	middle := `
+		<li class="page-item"><a class="page-link" href="#">12</a></li>
+		<li class="page-item disabled active"><a class="page-link" href="#">13</a></li>
+		<li class="page-item"><a class="page-link" href="#">14</a></li>`
+
+	mediumPost := `
+		<li class="page-item"><a class="page-link" href="#">15</a></li>`
+
+	smallPost := ``
+
+	// replace pad:
+	//mediumAfter
+	//// either ... or High-1
+	//smallAfter
+
+	mediumHigh := utils.Concat(`
+			<li class="page-item"><a class="page-link" href="#">`, strconv.Itoa(pages-1), `</a></li>`)
+
+	//smallHigh := ``
+
+	end := utils.Concat(`
+		<li class="page-item"><a class="page-link" href="#">`, strconv.Itoa(pages), `</a></li>
+	</ul>
+</nav>`)
+
+	small := utils.Concat(start, pad, smallPre, middle, smallPost, pad, end)
+	medium := utils.Concat(start, mediumLow, pad, mediumPre, middle, mediumPost, pad, mediumHigh, end)
+
+	return utils.Concat(small, medium)
+}
