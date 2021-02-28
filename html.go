@@ -289,96 +289,123 @@ func paginate(offset, limit, total int) string {
 	// small: 7
 	// _1_ ... _3_ ... _1_
 	// x ... y-1 y y+1 ... z
-	//
-	// 1: (1) 2 3 4 ... 21 22
-	// 2: 1 (2) 3 4 ... 21 22
-	// 3: 1 2 (3) 4 ... 21 22
-	// 4: 1 2 3 (4) 5 ... 22
-	// 5: 1 ... 4 (5) 6 ... 22
-	// -
-	// 18: 1 ... 17 (18) 19 ... 22
-	// 19: 1 ... 18 (19) 20 21 22
-	// 20: 1 2 ... 19 (20) 21 22
-	// 21: 1 2 ... 19 20 (21) 22
-	// 22: 1 2 ... 19 20 21 (22)
 
 	// medium: 11
 	// _2_ ... _5_ ... _2_
 	// x x+1 ... y-2 y-1 y y+1 y+2 ... z-1 z
-	//
-	// 1: (1) 2 3 4 5 6 7 ... 20 21 22
-	// 2: 1 (2) 3 4 5 6 7 ... 20 21 22
-	// 3: 1 2 (3) 4 5 6 7 ... 20 21 22
-	// 4: 1 2 3 (4) 5 6 7 ... 20 21 22
-	// 5: 1 2 3 4 (5) 6 7 ... 20 21 22
-	// 6: 1 2 3 4 5 (6) 7 8 ... 21 22
-	// 7: 1 2 ... 5 6 (7) 8 9 ... 21 22
-	// -
-	// 16: 1 2 ... 14 15 (16) 17 18 ... 21 22
-	// 17: 1 2 ... 15 16 (17) 18 19 20 21 22
-	// 18: 1 2 3 ... 16 17 (18) 19 20 21 22
-	// 19: 1 2 3 ... 16 17 18 (19) 20 21 22
-	// 20: 1 2 3 ... 16 17 18 19 (20) 21 22
-	// 21: 1 2 3 ... 16 17 18 19 20 (21) 22
-	// 22: 1 2 3 ... 16 17 18 19 20 21 (22)
 
 	// large: 15
 	// _3_ ... _7_ ... _3_
 	// x x+1 x+2 ... y-3 y-2 y-1 y y+1 y+2 y+3 ... z-2 z-1 z
-	// etc.
 
-	pages := total / limit
+	//pages := total / limit
+	pages := 22 // @todo - cater for lower pages
+
+	current := 5
+
+	xs := makePageNav(pages, current, 1) // max 7 links
+	s := makePageNav(pages, current, 2)  // max 11 links
+	m := makePageNav(pages, current, 3)  // max 15 links
+	l := makePageNav(pages, current, 4)  // max 19 links
+	//l := makePageNav(pages, 18, 4) // max 19 links
+	xl := makePageNav(pages, current, 5)   // max 23 links
+	xxl := makePageNav(pages, current, 6)  // max 27 links
+	xxxl := makePageNav(pages, current, 7) // max 31 links
+	//xxxl := makePageNav(pages, 21, 7) // max 31 links
+
+	return utils.Concat(xs, s, m, l, xl, xxl, xxxl)
+
+}
+
+func makePageNav(pages, current, size int) string {
+
+	if pages == 1 {
+		return ""
+	}
+
+	var centre int
+
+	selected := make(map[int]string, pages+1)
+	selected[current] = " disabled active"
+
+	// size -> max links...
+	// 1 -> 7, 2 -> 11, 3 -> 15, etc.
+	max := (size * 4) + 3
+
+	start := utils.Concat(`
+<nav class="mt-3" aria-label="Page navigation">
+	<ul class="pagination pagination-sm justify-content-center">
+	<li class="page-item`, selected[1], `"><a class="page-link" href="#" tabindex="1" aria-disabled="true">1</a></li>`)
+
+	end := utils.Concat(`
+		<li class="page-item`, selected[pages], `"><a class="page-link" href="#">`, strconv.Itoa(pages), `</a></li>
+	</ul>
+</nav>`)
 
 	pad := `
 		<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>...</span></a></li>`
 
-	start := `
-<nav class="mt-3" aria-label="Page navigation">
-	<ul class="pagination pagination-sm justify-content-center">
-		<li class="page-item disabled"><a class="page-link" href="#" tabindex="1" aria-disabled="true"><span>1</span></a></li>`
+	// @todo - cater for pages < max
+	//if pages <= max {
+	//
+	//}
 
-	//smallLow := ``
+	if current-size > size {
+		if current+size+size-1 < pages {
+			centre = current
+		} else {
+			centre = pages - (size * 2)
+		}
+	} else {
+		centre = (size * 2) + 1
+	}
+	if centre > max {
+		centre = max
+	}
 
-	mediumLow := `
-		<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><span>2</span></a></li>`
+	middle := utils.Concat(`
+		<li class="page-item`, selected[centre], `"><a class="page-link" href="#">`, strconv.Itoa(centre), `</a></li>`)
 
-	// replace pad:
-	//smallBefore
-	//// either ... or Low+1
-	//mediumBefore
+	for i := 1; i <= size; i++ {
 
-	smallPre := ``
+		if centre-i > 1 {
+			middle = utils.Concat(`<li class="page-item`, selected[centre-i], `"><a class="page-link" href="#" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre-i), `</a></li>`, middle)
+		}
+		if centre+i < pages {
+			middle = utils.Concat(middle, `<li class="page-item`, selected[centre+i], `"><a class="page-link" href="#" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre+i), `</a></li>`)
+		}
 
-	mediumPre := `
-		<li class="page-item"><a class="page-link" href="#">11</a></li>`
+		// might need to append to start
+		if (i + 1) < (centre - i) {
+			if (i < size) || (centre+i >= pages-i) || ((i == size) && (current >= centre) && ((centre - i - 1) <= (i + 1))) {
+				if i+1 < centre-size {
+					start = utils.Concat(start, `<li class="page-item`, selected[i+1], `"><a class="page-link" href="#" tabindex="1" aria-disabled="true">`, strconv.Itoa(i+1), `</a></li>`)
+				}
+			} else {
+				start = utils.Concat(start, pad)
+			}
+		} else {
+			if (i == size) && (centre+i+1 < pages-i) {
+				middle = utils.Concat(middle, pad)
+			}
+		}
 
-	middle := `
-		<li class="page-item"><a class="page-link" href="#">12</a></li>
-		<li class="page-item disabled active"><a class="page-link" href="#">13</a></li>
-		<li class="page-item"><a class="page-link" href="#">14</a></li>`
+		// might need prepend to end
+		if (pages - i) > (centre + i) {
+			if (i < size) || (centre-i <= i+1) || ((i == size) && (current <= centre) && ((centre + i + 1) >= (pages - i))) {
+				if pages-i > centre+size {
+					end = utils.Concat(`<li class="page-item`, selected[pages-i], `"><a class="page-link" href="#" tabindex="1" aria-disabled="true">`, strconv.Itoa(pages-i), `</a></li>`, end)
+				}
+			} else {
+				end = utils.Concat(pad, end)
+			}
+		} else {
+			if (i == size) && (centre-i-1 > i) {
+				middle = utils.Concat(pad, middle)
+			}
+		}
 
-	mediumPost := `
-		<li class="page-item"><a class="page-link" href="#">15</a></li>`
+	}
 
-	smallPost := ``
-
-	// replace pad:
-	//mediumAfter
-	//// either ... or High-1
-	//smallAfter
-
-	mediumHigh := utils.Concat(`
-			<li class="page-item"><a class="page-link" href="#">`, strconv.Itoa(pages-1), `</a></li>`)
-
-	//smallHigh := ``
-
-	end := utils.Concat(`
-		<li class="page-item"><a class="page-link" href="#">`, strconv.Itoa(pages), `</a></li>
-	</ul>
-</nav>`)
-
-	small := utils.Concat(start, pad, smallPre, middle, smallPost, pad, end)
-	medium := utils.Concat(start, mediumLow, pad, mediumPre, middle, mediumPost, pad, mediumHigh, end)
-
-	return utils.Concat(small, medium)
+	return utils.Concat(start, middle, end)
 }
