@@ -31,28 +31,43 @@ func route(w http.ResponseWriter, r *http.Request) {
 		} else {
 			signIn(w, r, "")
 		}
+		return
 
 	case "/sign-in":
 		signIn(w, r, "")
+		return
 
 	case "/courses":
-		courses(w, r, 0)
+		courses(w, r, 1)
+		return
 
 	default:
 		path := route[1:]
 
-		// WIP: return from launch in modal
-		if len(path) > 6 {
-			if path[0:6] == "parent" {
-				_, e := strconv.Atoi(path[7:])
-				if e == nil {
-					html(w, r, "", page{PLAIN, "Please wait..."}, "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
-					return
-				}
-
-				error404(w, r)
+		// paginated courses
+		if len(path) > 13 && path[0:13] == "courses/page-" {
+			index, e := strconv.Atoi(path[13:])
+			if e == nil {
+				courses(w, r, index)
 				return
 			}
+
+			// @todo - add a more specific error message to the 404 page
+			error404(w, r)
+			return
+		}
+
+		// WIP: return from launch in modal
+		if len(path) > 7 && path[0:7] == "parent/" {
+			_, e := strconv.Atoi(path[7:])
+			if e == nil {
+				html(w, r, "", page{PLAIN, "Please wait..."}, "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
+				return
+			}
+
+			// @todo - add a more specific error message to the 404 page
+			error404(w, r)
+			return
 		}
 
 		id, e := strconv.Atoi(path)
@@ -66,6 +81,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 		}
 
 		error404(w, r)
+		return
 	}
 }
 

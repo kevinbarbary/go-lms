@@ -7,13 +7,16 @@ import (
 	"strconv"
 )
 
-func courses(w http.ResponseWriter, r *http.Request, offset int) {
+func courses(w http.ResponseWriter, r *http.Request, index int) {
 
 	var user, breadcrumb, card, content string
 
 	token := api.GetToken(r)
 
-	courseData, newToken, u, _, err := api.Courses(token, offset)
+	if index < 1 {
+		index = 1
+	}
+	courseData, newToken, u, _, err := api.Courses(token, index)
 	if err == nil {
 		api.SaveToken(w, newToken)
 		user = u
@@ -51,7 +54,7 @@ func courses(w http.ResponseWriter, r *http.Request, offset int) {
 
 	content = utils.Concat(tagsFilter, `<div id="cards" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 g-3 g-md-2 g-lg-2 g-xl-2 g-xxl-2">`, content, `</div>`)
 
-	pagination := paginate(offset, courseData.Next.Limit, courseData.Total)
+	pagination := paginate(index, courseData.Next.Limit, courseData.Total)
 
 	content = utils.Concat(content, pagination)
 
