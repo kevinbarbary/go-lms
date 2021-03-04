@@ -63,15 +63,15 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 					signIn(w, r, strconv.Itoa(enrollId))
 					return
 				} else {
-					user = u
 					if enrol.NotValid() {
 
 						// @todo - call /enrolment/history/{LoginID}/{EnrollID}
 
-						breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {"Enrolment not found", ""}})
-						title = ERROR
-						content = "<p>Enrolment not found</p>"
+						error404(w, r, "enrolment", `Your <span class="text-secondary">enrolment</span> could not be found. Go <a href="/">back</a> and try again.`, []crumb{{"Enrolments", "/"}, {"Enrolment Not Found", ""}})
+						return
+
 					} else {
+						user = u
 						breadcrumb = breadcrumbTrail([]crumb{{"Enrolments", "/"}, {enrol.CourseTitle, ""}})
 						title = enrol.CourseTitle
 						var continueModal, continueContent string

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func error404(w http.ResponseWriter, r *http.Request) {
+func error404(w http.ResponseWriter, r *http.Request, location, info string, crumbs []crumb) {
 
 	// get the auth token - first try cookies and if no cookie token found hit the /auth endpoint to get a fresh token
 	token := api.GetToken(r)
@@ -20,7 +20,11 @@ func error404(w http.ResponseWriter, r *http.Request) {
 		api.SaveToken(w, newToken)
 
 		if result.LoginID == "" || result.LoginID == user {
-			message = utils.Concat("Error - page not found")
+			var pad string
+			if location != "" {
+				pad = " "
+			}
+			message = utils.Concat(`Error - `, location, pad, `page not found`)
 		} else {
 			message = utils.Concat("Session error - page not found")
 		}
@@ -28,13 +32,13 @@ func error404(w http.ResponseWriter, r *http.Request) {
 		message = GetError(err)
 		user = api.GetSignedInTokenFlag(token)
 	}
-
-	var home string
-	if user == "" {
-		home = SIGN_IN
-	} else {
-		home = "Enrolments"
+	if message == "" {
+		message = "Error - page not found"
 	}
-	breadcrumb := breadcrumbTrail([]crumb{{home, "/"}, {"Page Not Found", ""}})
-	html(w, r, user, page{ERROR, "Page Not Found"}, breadcrumb, utils.Concat(`<p>`, message, `</p>`))
+
+	breadcrumb := breadcrumbTrail(crumbs)
+
+	content := errorHTML(message, info)
+
+	html(w, r, user, page{ERROR, ""}, breadcrumb, content)
 }

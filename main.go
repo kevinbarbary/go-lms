@@ -52,8 +52,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// @todo - add a more specific error message to the 404 page
-			error404(w, r)
+			error404(w, r, "courses", `The <span class="text-secondary">courses</span> page could not be found. Go <a href="javascript:history.back()">back</a> and try again.`, []crumb{{"Courses", "/courses"}, {"Page Not Found", ""}})
 			return
 		}
 
@@ -65,11 +64,11 @@ func route(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			// @todo - add a more specific error message to the 404 page
-			error404(w, r)
+			error404(w, r, "enrolment", `Your <span class="text-secondary">enrolment</span> could not be found. Go <a href="/">home</a> and try again.`, []crumb{{"Enrolments", "/"}, {"Page Not Found", ""}})
 			return
 		}
 
+		// enrolment
 		id, e := strconv.Atoi(path)
 		if e == nil {
 			if api.CheckSignedIn(r) {
@@ -80,7 +79,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		error404(w, r)
+		error404(w, r, "", `Your page could not be found. Go <a href="/">home</a> and try again.`, []crumb{{"Home", "/"}, {"Page Not Found", ""}})
 		return
 	}
 }

@@ -24,7 +24,11 @@ func courses(w http.ResponseWriter, r *http.Request, index int) {
 
 	// @todo - don't do this if err... (but do what instead? make an error page that's not 404?)
 
-	breadcrumb = breadcrumbTrail([]crumb{{"Courses", ""}})
+	if index == 1 {
+		breadcrumb = breadcrumbTrail([]crumb{{"Courses", ""}})
+	} else {
+		breadcrumb = breadcrumbTrail([]crumb{{"Courses", "/courses"}, {utils.Concat("Page ", strconv.Itoa(index)), ""}})
+	}
 
 	tagsFilter := `<aside class="bd-sidebar"><nav class="collapse bd-links" id="bd-docs-nav" aria-label="Docs navigation"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
 	for _, tagType := range courseData.Tags {
