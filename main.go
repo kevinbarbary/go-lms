@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const SIGN_IN = "Sign In"
@@ -38,7 +39,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 		return
 
 	case "/courses":
-		courses(w, r, 1)
+		courses(w, r, 1, []string{})
 		return
 
 	default:
@@ -46,9 +47,25 @@ func route(w http.ResponseWriter, r *http.Request) {
 
 		// paginated courses
 		if len(path) > 13 && path[0:13] == "courses/page-" {
-			index, e := strconv.Atoi(path[13:])
+
+			var pageParam string
+			var tags []string
+			i := strings.Index(path[13:], "/")
+			if i > 0 {
+				// page number and tags in URL
+				pageParam = path[13 : 13+i]
+				tagsParam := path[13+i+1:]
+				if len(tagsParam) > 4 && tagsParam[:4] == "tag-" {
+					tags = strings.Split(tagsParam[4:], "-")
+				}
+			} else {
+				// just page number in URL
+				pageParam = path[13:]
+			}
+
+			index, e := strconv.Atoi(pageParam)
 			if e == nil {
-				courses(w, r, index)
+				courses(w, r, index, tags)
 				return
 			}
 

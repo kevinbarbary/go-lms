@@ -277,14 +277,18 @@ $("#continue").click(function () {
 	return html, modalContinue, tutorials, started, completed
 }
 
-func cbx(id, text, class string) string {
+func cbx(id, text, class string, selected bool) string {
+	var checked string
+	if selected {
+		checked = " checked"
+	}
 	return utils.Concat(`<div class="form-check `, class, `">
-  <input class="form-check-input" type="checkbox" value="" id="tag`, id, `">
+  <input class="form-check-input" type="checkbox"`, checked, ` name="tag`, id, `" id="tag`, id, `">
   <label class="form-check-label" for="tag`, id, `">`, text, `</label>
 </div>`)
 }
 
-func paginate(index, limit, total int) string {
+func paginate(index, limit, total int, params string) string {
 
 	// small: 7
 	// _1_ ... _3_ ... _1_
@@ -300,16 +304,16 @@ func paginate(index, limit, total int) string {
 
 	pages := total / limit
 
-	s := makePageNav(pages, index, 1)  // max 7 links
-	m := makePageNav(pages, index, 2)  // max 11 links
-	l := makePageNav(pages, index, 3)  // max 15 links
-	xl := makePageNav(pages, index, 4) // max 19 links
+	s := makePageNav(pages, index, 1, params)  // max 7 links
+	m := makePageNav(pages, index, 2, params)  // max 11 links
+	l := makePageNav(pages, index, 3, params)  // max 15 links
+	xl := makePageNav(pages, index, 4, params) // max 19 links
 
 	return utils.Concat(s, m, l, xl)
 
 }
 
-func makePageNav(pages, index, size int) string {
+func makePageNav(pages, index, size int, params string) string {
 
 	if pages == 1 {
 		return ""
@@ -345,33 +349,33 @@ func makePageNav(pages, index, size int) string {
 	start := utils.Concat(`
 <nav class="mt-3" aria-label="Page navigation">
 	<ul class="pagination pagination-sm justify-content-center">
-	<li class="page-item`, selected[1], `"><a class="page-link" href="/courses" tabindex="1" aria-disabled="true">1</a></li>`)
+	<li class="page-item`, selected[1], `"><a class="page-link" href="/courses/page-1`, params, `" tabindex="1" aria-disabled="true">1</a></li>`)
 
 	if pages > 1 {
 		end = utils.Concat(`
-		<li class="page-item`, selected[pages], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(pages), `">`, strconv.Itoa(pages), `</a></li>
+		<li class="page-item`, selected[pages], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(pages), params, `">`, strconv.Itoa(pages), `</a></li>
 	</ul>
 </nav>`)
 		if pages > 2 {
 			middle = utils.Concat(`
-		<li class="page-item`, selected[centre], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre), `">`, strconv.Itoa(centre), `</a></li>`)
+		<li class="page-item`, selected[centre], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre), params, `">`, strconv.Itoa(centre), `</a></li>`)
 		}
 	}
 
 	for i := 1; i <= size; i++ {
 
 		if centre-i > 1 {
-			middle = utils.Concat(`<li class="page-item`, selected[centre-i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre-i), `" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre-i), `</a></li>`, middle)
+			middle = utils.Concat(`<li class="page-item`, selected[centre-i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre-i), params, `" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre-i), `</a></li>`, middle)
 		}
 		if centre+i < pages {
-			middle = utils.Concat(middle, `<li class="page-item`, selected[centre+i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre+i), `" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre+i), `</a></li>`)
+			middle = utils.Concat(middle, `<li class="page-item`, selected[centre+i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(centre+i), params, `" tabindex="1" aria-disabled="true">`, strconv.Itoa(centre+i), `</a></li>`)
 		}
 
 		// might need to append to start
 		if (i + 1) < (centre - i) {
 			if (i < size) || (centre+i >= pages-i) || ((i == size) && (index >= centre) && (centre-i-1 <= i+1)) {
 				if i+1 < centre-size {
-					start = utils.Concat(start, `<li class="page-item`, selected[i+1], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(i+1), `" tabindex="1" aria-disabled="true">`, strconv.Itoa(i+1), `</a></li>`)
+					start = utils.Concat(start, `<li class="page-item`, selected[i+1], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(i+1), params, `" tabindex="1" aria-disabled="true">`, strconv.Itoa(i+1), `</a></li>`)
 				}
 			} else {
 				start = utils.Concat(start, pad)
@@ -386,7 +390,7 @@ func makePageNav(pages, index, size int) string {
 		if (pages - i) > (centre + i) {
 			if (i < size) || (centre-i <= i+1) || ((i == size) && (index <= centre) && (centre+i+1 >= pages-i)) {
 				if pages-i > centre+size {
-					end = utils.Concat(`<li class="page-item`, selected[pages-i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(pages-i), `" tabindex="1" aria-disabled="true">`, strconv.Itoa(pages-i), `</a></li>`, end)
+					end = utils.Concat(`<li class="page-item`, selected[pages-i], `"><a class="page-link" href="/courses/page-`, strconv.Itoa(pages-i), params, `" tabindex="1" aria-disabled="true">`, strconv.Itoa(pages-i), `</a></li>`, end)
 				}
 			} else {
 				end = utils.Concat(pad, end)
