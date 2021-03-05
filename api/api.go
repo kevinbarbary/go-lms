@@ -17,7 +17,7 @@ type Timestamp int64
 type JsonDate time.Time
 type JsonDateTime time.Time
 
-type Params map[string]string
+type Params map[string]interface{}
 
 func MergeParams(a, b Params) Params {
 	for k, v := range b {

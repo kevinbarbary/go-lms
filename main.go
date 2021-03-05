@@ -39,7 +39,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 		return
 
 	case "/courses":
-		courses(w, r, 1, []string{})
+		courses(w, r, 1, []int{})
 		return
 
 	default:
@@ -49,14 +49,18 @@ func route(w http.ResponseWriter, r *http.Request) {
 		if len(path) > 13 && path[0:13] == "courses/page-" {
 
 			var pageParam string
-			var tags []string
+			var tags []int
 			i := strings.Index(path[13:], "/")
 			if i > 0 {
 				// page number and tags in URL
 				pageParam = path[13 : 13+i]
 				tagsParam := path[13+i+1:]
 				if len(tagsParam) > 4 && tagsParam[:4] == "tag-" {
-					tags = strings.Split(tagsParam[4:], "-")
+					var err bool
+					tags, err = utils.Atoi(strings.Split(tagsParam[4:], "-"))
+					if err {
+						log.Print("Error: invalid CourseTags list querystring parameter '", tagsParam[4:], "'")
+					}
 				}
 			} else {
 				// just page number in URL

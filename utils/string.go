@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -92,11 +93,25 @@ func AlphaNumeric(in string) string {
 	return reg.ReplaceAllString(in, "")
 }
 
-func Find(slice []string, val string) (int, bool) {
+func FindString(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
 			return i, true
 		}
 	}
 	return -1, false
+}
+
+func Atoi(slice []string) ([]int, bool) {
+	var i []int
+	e := false
+	for _, item := range slice {
+		a, err := strconv.Atoi(item)
+		if err == nil {
+			i = append(i, a)
+		} else {
+			e = true
+		}
+	}
+	return i, e
 }

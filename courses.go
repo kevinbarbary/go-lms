@@ -6,10 +6,9 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-func courses(w http.ResponseWriter, r *http.Request, index int, tags []string) {
+func courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 
 	var user, breadcrumb, card, content string
 
@@ -18,7 +17,43 @@ func courses(w http.ResponseWriter, r *http.Request, index int, tags []string) {
 	if index < 1 {
 		index = 1
 	}
-	courseData, newToken, u, _, err := api.Courses(token, index)
+
+	// get selected tags
+	var tagsParam string
+	if r.Method == "POST" {
+
+		err := r.ParseForm()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var formTags []int
+		for i := range r.Form {
+			if len(i) > 3 && i[:3] == "tag" {
+				t, err := strconv.Atoi(i[3:])
+				if err == nil {
+					formTags = append(formTags, t)
+					tagsParam = utils.Concat(tagsParam, "-", i[3:])
+				} else {
+					log.Print("Error: ignoring invalid CourseTag '", i[3:], "' in Courses filter")
+				}
+			}
+		}
+
+		if len(formTags) > 0 {
+			tags = formTags
+		}
+
+	} else if len(tags) > 0 {
+		for i := range tags {
+			tagsParam = utils.Concat(tagsParam, "-", strconv.Itoa(i))
+		}
+	}
+	if tagsParam != "" {
+		tagsParam = utils.Concat("/tag", tagsParam)
+	}
+
+	courseData, newToken, u, _, err := api.Courses(token, index, tags)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,36 +64,6 @@ func courses(w http.ResponseWriter, r *http.Request, index int, tags []string) {
 
 	api.SaveToken(w, newToken)
 	user = u
-
-	// get selected tags
-	var tagsParam string
-	if r.Method == "POST" {
-
-		err = r.ParseForm()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		var formTags []string
-		for i := range r.Form {
-			if len(i) > 3 && i[:3] == "tag" {
-
-				formTags = append(formTags, i[3:])
-
-				tagsParam = utils.Concat(tagsParam, "-", i[3:])
-			}
-		}
-
-		if len(formTags) > 0 {
-			tags = formTags
-		}
-
-	} else if len(tags) > 0 {
-		tagsParam = utils.Concat("-", strings.Join(tags, "-"))
-	}
-	if tagsParam != "" {
-		tagsParam = utils.Concat("/tag", tagsParam)
-	}
 
 	// build breadcrumb
 	if index == 1 {
@@ -79,9 +84,8 @@ func courses(w http.ResponseWriter, r *http.Request, index int, tags []string) {
 			alphanum, `-collapse"><div class="collapse show" id="forms-collapse"><ul class="list-unstyled fw-normal pb-1 small">`)
 
 		for _, tag := range tagType.Tags {
-			id := strconv.Itoa(tag.TagID)
-			_, selected := utils.Find(tags, id)
-			tagsFilter = utils.Concat(tagsFilter, "<li>", cbx(id, tag.Tag, "d-inline-flex rounded", selected), "</li>")
+			_, selected := utils.FindInt(tags, tag.TagID)
+			tagsFilter = utils.Concat(tagsFilter, "<li>", cbx(strconv.Itoa(tag.TagID), tag.Tag, "d-inline-flex rounded", selected), "</li>")
 		}
 
 		tagsFilter = utils.Concat(tagsFilter, `</ul></div></li>`)

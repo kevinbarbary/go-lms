@@ -302,7 +302,12 @@ func paginate(index, limit, total int, params string) string {
 	// _3_ ... _7_ ... _3_
 	// x x+1 x+2 ... y-3 y-2 y-1 y y+1 y+2 y+3 ... z-2 z-1 z
 
-	pages := total / limit
+	var pages int
+	if total < limit {
+		pages = 1
+	} else {
+		pages = total / limit
+	}
 
 	s := makePageNav(pages, index, 1, params)  // max 7 links
 	m := makePageNav(pages, index, 2, params)  // max 11 links
