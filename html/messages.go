@@ -1,7 +1,7 @@
-package main
+package html
 
 import (
-	"./utils"
+	"../utils"
 	"net/http"
 	"strconv"
 )

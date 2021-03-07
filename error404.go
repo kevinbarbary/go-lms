@@ -2,11 +2,12 @@ package main
 
 import (
 	"./api"
+	"./html"
 	"./utils"
 	"net/http"
 )
 
-func error404(w http.ResponseWriter, r *http.Request, location, info string, crumbs []crumb) {
+func error404(w http.ResponseWriter, r *http.Request, location, info string, crumbs []html.Crumb) {
 
 	// get the auth token - first try cookies and if no cookie token found hit the /auth endpoint to get a fresh token
 	token := api.GetToken(r)
@@ -36,9 +37,9 @@ func error404(w http.ResponseWriter, r *http.Request, location, info string, cru
 		message = "Error - page not found"
 	}
 
-	breadcrumb := breadcrumbTrail(crumbs)
+	breadcrumb := html.BreadcrumbTrail(crumbs)
 
-	content := errorHTML(message, info)
+	content := html.Error(message, info)
 
-	html(w, r, user, page{ERROR, ""}, breadcrumb, content)
+	html.Webpage(w, r, user, html.Page{html.ERROR, ""}, breadcrumb, content)
 }

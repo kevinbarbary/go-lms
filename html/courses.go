@@ -1,14 +1,14 @@
-package main
+package html
 
 import (
-	"./api"
-	"./utils"
+	"../api"
+	"../utils"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-func courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
+func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 
 	var user, breadcrumb, card, content string
 
@@ -68,10 +68,10 @@ func courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	// build breadcrumb
 	if index == 1 {
 		pageIndex = "1"
-		breadcrumb = breadcrumbTrail([]crumb{{"Courses", ""}})
+		breadcrumb = BreadcrumbTrail([]Crumb{{"Courses", ""}})
 	} else {
 		pageIndex = strconv.Itoa(index)
-		breadcrumb = breadcrumbTrail([]crumb{{"Courses", "/courses"}, {utils.Concat("Page ", pageIndex), ""}})
+		breadcrumb = BreadcrumbTrail([]Crumb{{"Courses", "/courses"}, {utils.Concat("Page ", pageIndex), ""}})
 	}
 
 	// build filter
@@ -111,5 +111,5 @@ func courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 
 	content = utils.Concat(content, pagination)
 
-	html(w, r, user, page{COURSES, COURSES}, breadcrumb, content)
+	Webpage(w, r, user, Page{COURSES, COURSES}, breadcrumb, content)
 }

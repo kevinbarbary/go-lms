@@ -2,18 +2,13 @@ package main
 
 import (
 	"./api"
+	"./html"
 	"./utils"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 )
-
-const SIGN_IN = "Sign In"
-const LEARN = "Enrolments"
-const COURSES = "Courses"
-const ERROR = "Error"
-const PLAIN = "Plain"
 
 func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
@@ -39,7 +34,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 		return
 
 	case "/courses":
-		courses(w, r, 1, []int{})
+		html.Courses(w, r, 1, []int{})
 		return
 
 	default:
@@ -69,11 +64,11 @@ func route(w http.ResponseWriter, r *http.Request) {
 
 			index, e := strconv.Atoi(pageParam)
 			if e == nil {
-				courses(w, r, index, tags)
+				html.Courses(w, r, index, tags)
 				return
 			}
 
-			error404(w, r, "courses", `The <span class="text-secondary">courses</span> page could not be found. Go <a href="javascript:history.back()">back</a> and try again.`, []crumb{{"Courses", "/courses"}, {"Page Not Found", ""}})
+			error404(w, r, "courses", `The <span class="text-secondary">courses</span> page could not be found. Go <a href="javascript:history.back()">back</a> and try again.`, []html.Crumb{{"Courses", "/courses"}, {"Page Not Found", ""}})
 			return
 		}
 
@@ -81,11 +76,11 @@ func route(w http.ResponseWriter, r *http.Request) {
 		if len(path) > 7 && path[0:7] == "parent/" {
 			_, e := strconv.Atoi(path[7:])
 			if e == nil {
-				html(w, r, "", page{PLAIN, "Please wait..."}, "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
+				html.Webpage(w, r, "", html.Page{html.PLAIN, "Please wait..."}, "Loading...", utils.Concat(`<script type="text/javascript">window.parent.href="/`, path[7:], `";</script>`))
 				return
 			}
 
-			error404(w, r, "enrolment", `Your <span class="text-secondary">enrolment</span> could not be found. Go <a href="/">home</a> and try again.`, []crumb{{"Enrolments", "/"}, {"Page Not Found", ""}})
+			error404(w, r, "enrolment", `Your <span class="text-secondary">enrolment</span> could not be found. Go <a href="/">home</a> and try again.`, []html.Crumb{{"Enrolments", "/"}, {"Page Not Found", ""}})
 			return
 		}
 
@@ -100,7 +95,7 @@ func route(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		error404(w, r, "", `Your page could not be found. Go <a href="/">home</a> and try again.`, []crumb{{"Home", "/"}, {"Page Not Found", ""}})
+		error404(w, r, "", `Your page could not be found. Go <a href="/">home</a> and try again.`, []html.Crumb{{"Home", "/"}, {"Page Not Found", ""}})
 		return
 	}
 }
