@@ -31,7 +31,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 
 		if enrollId == 0 {
 
-			enrol, newToken, u, now, err := api.UserEnrolments(token, api.TokenUser())
+			enrol, newToken, u, now, err := api.UserEnrolments(token, utils.GetSite(r), api.TokenUser())
 			if err == nil {
 
 				api.SaveToken(w, newToken)
@@ -55,7 +55,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 
 		} else {
 
-			enrol, newToken, u, err := api.UserTutorials(token, api.TokenUser(), enrollId)
+			enrol, newToken, u, err := api.UserTutorials(token, utils.GetSite(r), api.TokenUser(), enrollId)
 			if err == nil {
 
 				api.SaveToken(w, newToken)

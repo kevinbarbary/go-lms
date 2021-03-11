@@ -31,9 +31,9 @@ type UserEnrol struct {
 	CertificateURL string      `json:"CertificateURL"`
 }
 
-func UserEnrolments(token, loginId string) ([]UserEnrol, string, string, Timestamp, error) {
+func UserEnrolments(token, site, loginId string) ([]UserEnrol, string, string, Timestamp, error) {
 
-	response, err := Call("GET", utils.Endpoint(utils.Concat("/enrolments/", loginId)), token, nil)
+	response, err := Call("GET", utils.Endpoint(utils.Concat("/enrolments/", loginId)), token, site, nil, true)
 
 	if err != nil {
 		log.Print("UserEnrolments Error - invalid response from API call... ", err.Error())

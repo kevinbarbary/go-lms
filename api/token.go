@@ -16,9 +16,9 @@ type TokenInfo struct {
 	LoginID          string
 }
 
-func CheckToken(token, check string) (TokenInfo, Timestamp, string, string, error) {
+func CheckToken(token, site, check string) (TokenInfo, Timestamp, string, string, error) {
 
-	response, err := Call("POST", utils.Endpoint("/auth/check"), token, Params{"Token": check})
+	response, err := Call("POST", utils.Endpoint("/auth/check"), token, site, Params{"Token": check}, true)
 	if err != nil {
 		log.Print("CheckToken Error - invalid response from API call... ", err.Error())
 		return TokenInfo{}, 0, "", "", err
@@ -68,7 +68,7 @@ func SaveToken(w http.ResponseWriter, token string) {
 func GetToken(r *http.Request) string {
 	token, err := utils.GetCookieValue(r, "token")
 	if err != nil || token == "" {
-		token, _ = Auth("", "")
+		token, _ = Auth(utils.GetSite(r), "", "", false)
 	}
 	return token
 }

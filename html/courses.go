@@ -53,7 +53,7 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 		tagsParam = utils.Concat("/tag", tagsParam)
 	}
 
-	courseData, newToken, u, _, err := api.Courses(token, index, tags)
+	courseData, newToken, u, _, err := api.Courses(token, utils.GetSite(r), index, tags)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,7 +3,9 @@ package utils
 import (
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"os"
+	"strings"
 )
 
 func Assets(kind string) string {
@@ -38,10 +40,19 @@ func Endpoint(path string) string {
 	return Concat(os.Getenv("API"), path)
 }
 
-func Creds() (string, string, error) {
+func Creds(site string) (string, string, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Print("Error loading .env file in get Creds()")
 	}
-	return os.Getenv("SiteID"), os.Getenv("SiteKey"), nil
+	id := os.Getenv("SiteID")
+	if id == os.Getenv("MultiSite") {
+		return id, site, nil
+	}
+	return id, os.Getenv("SiteKey"), nil
+}
+
+func GetSite(r *http.Request) string {
+	domain := strings.Split(r.Host, ".")
+	return domain[0]
 }

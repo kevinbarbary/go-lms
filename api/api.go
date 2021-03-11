@@ -116,11 +116,11 @@ func extract(data string) (interface{}, string, string, Timestamp, string, strin
 func Call(method, endpoint, token string, payload Params) (string, error) {
 	// Call the Course-Source RESTful API, if the token is unauthorized (e.g. expired) get a new token and repeat the request
 	data, err, code := request(method, endpoint, token, payload)
-	if code == http.StatusUnauthorized {
+	if code == http.StatusUnauthorized && retry {
 		// auth fail - try again with a new token
 		log.Print("API Call unauthorized - trying again with new auth token")
 		var newToken string
-		if newToken, _ = Auth("", ""); token == "" {
+		if newToken, _ = Auth(site, "", "", false); token == "" {
 			log.Print("Auth token request failed... ", err.Error())
 			panic(err)
 		}

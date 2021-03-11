@@ -56,11 +56,11 @@ type CoursesData struct {
 	Next       Pagination      `json:"Next"`
 }
 
-func Courses(token string, index int, tags []int) (CoursesData, string, string, Timestamp, error) {
+func Courses(token, site string, index int, tags []int) (CoursesData, string, string, Timestamp, error) {
 
 	// hard-coded for 24 courses per page
 
-	response, err := Call("POST", utils.Endpoint("/courses"), token, Params{"Offset": strconv.Itoa((index - 1) * 24), "Limit": "24", "CourseTags": tags})
+	response, err := Call("POST", utils.Endpoint("/courses"), token, site, Params{"Offset": strconv.Itoa((index - 1) * 24), "Limit": "24", "CourseTags": tags}, true)
 
 	if err != nil {
 		log.Print("Courses Error - invalid response from API call... ", err.Error())

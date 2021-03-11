@@ -48,9 +48,9 @@ func (e UserEnrolment) NotValid() bool {
 	return e.EnrollID == 0
 }
 
-func UserTutorials(token, loginId string, enrollId int) (UserEnrolment, string, string, error) {
+func UserTutorials(token, site, loginId string, enrollId int) (UserEnrolment, string, string, error) {
 
-	response, err := Call("GET", utils.Endpoint(utils.Concat("/enrolment/", loginId, "/", strconv.Itoa(enrollId))), token, nil)
+	response, err := Call("GET", utils.Endpoint(utils.Concat("/enrolment/", loginId, "/", strconv.Itoa(enrollId))), token, site, nil, true)
 	if err != nil {
 		log.Print("UserTutorials Error - invalid response from API call... ", err.Error())
 		return UserEnrolment{}, "", "", err
