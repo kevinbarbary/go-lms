@@ -8,51 +8,62 @@ import (
 	"strings"
 )
 
-func Assets(kind string) string {
+func get(kind, id string) string {
 	err := godotenv.Load()
 	if err != nil {
-		log.Print("Error loading .env file in get Assets()")
+		log.Print(Concat("Error loading .env file in get ", id, "()"))
 	}
 	return os.Getenv(kind)
 }
 
-func Domain() string {
+func getTwo(one, two, id string) (string, string) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Print("Error loading .env file in get Domain()")
+		log.Print(Concat("Error loading .env file in get ", id, "()"))
 	}
-	return Concat(os.Getenv("Domain"), ":", os.Getenv("Port"))
+	return os.Getenv(one), os.Getenv(two)
+}
+
+func getThree(one, two, three, id string) (string, string, string) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print(Concat("Error loading .env file in get ", id, "()"))
+	}
+	return os.Getenv(one), os.Getenv(two), os.Getenv(three)
+}
+
+func Assets(kind string) string {
+	return get(kind, "Assets")
+}
+
+func Domain() string {
+	a, b := getTwo("Domain", "Port", "Domain")
+	return Concat(a, ":", b)
 }
 
 func Logo() (string, string) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("Error loading .env file in get Logo()")
-	}
-	return os.Getenv("SiteLogo"), os.Getenv("SiteName")
+	return getTwo("SiteLogo", "SiteName", "Logo")
 }
 
 func Endpoint(path string) string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("Error loading .env file in get Endpoint()")
-	}
-	return Concat(os.Getenv("API"), path)
+	return Concat(get("API", "Endpoint"), path)
 }
 
-func Creds(site string) (string, string, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("Error loading .env file in get Creds()")
+func Creds(site string) (string, string) {
+	id, multi, key := getThree("SiteID", "MultiSite", "SiteKey", "Creds")
+	if id == multi {
+		return id, site
 	}
-	id := os.Getenv("SiteID")
-	if id == os.Getenv("MultiSite") {
-		return id, site, nil
-	}
-	return id, os.Getenv("SiteKey"), nil
+	return id, key
 }
 
 func GetSite(r *http.Request) string {
+	// Multi-Site: get the SiteID from the subdomain, can be overridden with a SiteMapper entry in .env
 	domain := strings.Split(r.Host, ".")
-	return domain[0]
+	site := domain[0]
+	kind := Concat("SiteMapper-", site)
+	if mapped := get(kind, "GetSite"); mapped != "" {
+		return mapped
+	}
+	return site
 }
