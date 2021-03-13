@@ -113,19 +113,19 @@ func extract(data string) (interface{}, string, string, Timestamp, string, strin
 	return resp.Data, resp.Error, resp.Help, resp.Timestamp, resp.Token, resp.User
 }
 
-func Call(method, endpoint, token string, payload Params) (string, error) {
+func Call(method, endpoint, token, useragent, site string, payload Params, retry bool) (string, error) {
 	// Call the Course-Source RESTful API, if the token is unauthorized (e.g. expired) get a new token and repeat the request
-	data, err, code := request(method, endpoint, token, payload)
+	data, err, code := request(useragent, method, endpoint, token, payload)
 	if code == http.StatusUnauthorized && retry {
 		// auth fail - try again with a new token
 		log.Print("API Call unauthorized - trying again with new auth token")
 		var newToken string
-		if newToken, _ = Auth(site, "", "", false); token == "" {
+		if newToken, _ = Auth(site, "", "", useragent, false); token == "" {
 			log.Print("Auth token request failed... ", err.Error())
 			panic(err)
 		}
 		log.Print("New auth token received")
-		data, err, _ = request(method, endpoint, newToken, payload)
+		data, err, _ = request(useragent, method, endpoint, newToken, payload)
 		if err != nil {
 			log.Print("API Call retry fail... ", err.Error())
 			panic(err)
@@ -136,7 +136,7 @@ func Call(method, endpoint, token string, payload Params) (string, error) {
 }
 
 // @todo - reduce duplication...
-func request(method, endpoint, token string, payload Params) (string, error, int) {
+func request(useragent, method, endpoint, token string, payload Params) (string, error, int) {
 
 	if method == "GET" {
 
@@ -151,6 +151,7 @@ func request(method, endpoint, token string, payload Params) (string, error, int
 		}
 
 		request.Header.Add("Accept", "application/json")
+		request.Header.Set("User-Agent", useragent)
 		if token != "" {
 			request.Header.Set("Authorization", utils.Concat("Bearer ", token))
 		}
@@ -194,6 +195,7 @@ func request(method, endpoint, token string, payload Params) (string, error, int
 
 		request.Header.Add("Accept", "application/json")
 		request.Header.Set("Content-type", "application/json")
+		request.Header.Set("User-Agent", useragent)
 		if token != "" {
 			request.Header.Set("Authorization", utils.Concat("Bearer ", token))
 		}

@@ -14,7 +14,7 @@ func error404(w http.ResponseWriter, r *http.Request, location, info string, cru
 
 	var message string
 
-	result, _, newToken, user, err := api.CheckToken(token, utils.GetSite(r), token)
+	result, _, newToken, user, err := api.CheckToken(token, r.UserAgent(), utils.GetSite(r), token)
 	if err == nil {
 
 		// save the new token to use in the next api call

@@ -5,23 +5,18 @@ import (
 	"log"
 )
 
-func Auth(site, username, password string, retry bool) (string, string) {
-	return authenticate(site, username, password, "", retry)
+func Auth(site, username, password, useragent string, retry bool) (string, string) {
+	return authenticate(useragent, site, username, password, "", retry)
 }
 
-func Unauth(site, token string) (string, string) {
+func Unauth(site, token, useragent string) (string, string) {
 	// i.e. sign out - remove user from token
-	return authenticate(site, "", "", token, false)
+	return authenticate(useragent, site, "", "", token, false)
 }
 
-func authenticate(site, username, password, token string, retry bool) (string, string) {
+func authenticate(useragent, site, username, password, token string, retry bool) (string, string) {
 
-	site, key, err := utils.Creds(site)
-	if err != nil {
-		log.Print("Auth Error - invalid response from API call... ", err.Error())
-		return "", ""
-	}
-
+	site, key := utils.Creds(site)
 	payload, err := Creds(site, key)
 	if err != nil {
 		log.Print("Auth Error - failed to build auth payload for api call... ", err.Error())
@@ -32,7 +27,7 @@ func authenticate(site, username, password, token string, retry bool) (string, s
 		payload = MergeParams(payload, Params{"LoginID": username, "Password": password})
 	}
 
-	response, err := Call("POST", utils.Endpoint("/auth"), token, site, payload, retry)
+	response, err := Call("POST", utils.Endpoint("/auth"), token, useragent, site, payload, retry)
 	if err != nil {
 		log.Print("Auth Error - API call failed... ", err.Error())
 		return "", ""

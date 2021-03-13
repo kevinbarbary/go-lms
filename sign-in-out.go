@@ -21,7 +21,7 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 	} else {
 
 		// get the auth token - first try cookies and if no cookie token found hit the /auth endpoint to get a fresh token
-		token, u := api.Auth(utils.GetSite(r), name, pass, false)
+		token, u := api.Auth(utils.GetSite(r), name, pass, r.UserAgent(), false)
 
 		api.SaveToken(w, token)
 		if u != "" {
@@ -44,7 +44,7 @@ func signOut(w http.ResponseWriter, r *http.Request) {
 
 		// remove the user from the token by calling the auth endpoint without the LoginID and Password
 		// i.e. get a new token without a user in (also invalidates the session in the current token so any tokens containing the same session can't be used again)
-		newToken, user := api.Unauth(utils.GetSite(r), token)
+		newToken, user := api.Unauth(utils.GetSite(r), token, r.UserAgent())
 
 		api.SaveToken(w, newToken)
 		if user == "" {
