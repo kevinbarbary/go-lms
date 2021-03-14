@@ -42,7 +42,9 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		}
 	case LEARN:
 		coursesOutline = "outline-"
-		learnDisabled = " disabled"
+		if page.Header == LEARN {
+			learnDisabled = " disabled"
+		}
 	case COURSES:
 		learnOutline = "outline-"
 		coursesDisabled = " disabled"
