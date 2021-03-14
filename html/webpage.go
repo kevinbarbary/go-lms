@@ -8,6 +8,7 @@ import (
 )
 
 const SIGN_IN = "Sign In"
+const SIGN_OUT = "Sign Out"
 const LEARN = "Enrolments"
 const COURSES = "Courses"
 const ERROR = "Error"
@@ -19,11 +20,6 @@ type Page struct {
 
 func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, breadcrumb, content string) {
 
-	var css string
-	if page.Kind == SIGN_IN {
-		css = `<link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">`
-	}
-
 	title := "LMS - "
 	if page.Header == "" {
 		title = utils.Concat(title, "home")
@@ -33,12 +29,17 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		title = utils.Concat(title, page.Header)
 	}
 
-	var signInOut, menu, menuSpacing, learnItem, learnOutline, learnDisabled, coursesOutline, coursesDisabled string
+	var css, signInOut, menu, menuSpacing, siteItem, learnItem, learnOutline, learnDisabled, coursesOutline, coursesDisabled string
 
-	// @todo - when there are more than two menu items it would be better to initialise them ALL as "outline=" then override the current page with "" ? (maybe not true now we also have disabled)
+	multi := utils.GetMultiSite(r)
+
 	switch page.Kind {
 	case SIGN_IN:
+		css = `<link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">`
 		coursesOutline = "outline-"
+		if multi != "" {
+			siteItem = utils.Concat(`<a href="/" class="btn btn-primary btn-sm disabled">`, SIGN_IN, ` - `, multi, `</a>`)
+		}
 	case LEARN:
 		coursesOutline = "outline-"
 		learnDisabled = " disabled"
@@ -52,24 +53,31 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 
 	if page.Kind != PLAIN {
 		class := "btn btn-outline-primary btn-sm"
+		if multi != "" {
+			menuSpacing = " ms-3"
+		}
 		if user == "" {
 			if page.Kind != SIGN_IN {
-				signInOut = utils.HyperClass("/", SIGN_IN, class)
-				menuSpacing = " ms-3"
+				if multi == "" {
+					signInOut = utils.HyperClass("/", SIGN_IN, class)
+					menuSpacing = " ms-3"
+				} else {
+					signInOut = utils.HyperClass("/", utils.Concat(SIGN_IN, " - ", multi), class)
+				}
 			}
 		} else {
-			if page.Kind != SIGN_IN {
+			if page.Kind != SIGN_IN && multi == "" {
 				menuSpacing = " ms-3"
 			}
 			if user == api.TokenUser() {
-				signInOut = utils.HyperClass("/sign-out", "Sign out", class)
+				signInOut = utils.HyperClass("/sign-out", SIGN_OUT, class)
 			} else {
-				signInOut = utils.HyperClass("/sign-out", utils.Concat("Sign out: ", user), class)
+				signInOut = utils.HyperClass("/sign-out", utils.Concat(SIGN_OUT, ": ", user), class)
 			}
 			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learnOutline, `primary btn-sm`, learnDisabled, `">Learn</a>`)
 		}
 
-		menu = utils.Concat(`<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,
+		menu = utils.Concat(siteItem, `<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,
 			learnItem, `<a href="/courses" class="btn btn-`, coursesOutline, `primary btn-sm`, coursesDisabled, `">Browse</a></div>`)
 
 		menu = utils.Concat(`<div class="menu mb-3">`, signInOut, menu, `</div>`)

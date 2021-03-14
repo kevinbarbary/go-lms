@@ -57,6 +57,15 @@ func Creds(site string) (string, string) {
 	return id, key
 }
 
+func GetMultiSite(r *http.Request) string {
+	site := get("MultiSite", "GetMultiSite")
+	if site == "" {
+		return ""
+	}
+	domain := strings.Split(r.Host, ".")
+	return domain[0]
+}
+
 func GetSite(r *http.Request) string {
 	// Multi-Site: get the SiteID from the subdomain, can be overridden with a SiteMapper entry in .env
 	domain := strings.Split(r.Host, ".")
