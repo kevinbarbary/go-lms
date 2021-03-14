@@ -75,11 +75,11 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	}
 
 	// build filter
-	tagsFilter := `<aside class="bd-sidebar"><nav class="collapse bd-links" id="bd-docs-nav" aria-label="Docs navigation"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
+	tagsFilter := `<aside class="sidebar"><nav class="collapse links" id="filter-nav" aria-label="Course Filter"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
 	for _, tagType := range courseData.Tags {
 
 		alphanum := utils.AlphaNumeric(tagType.TagType)
-		tagsFilter = utils.Concat(tagsFilter, `<li class="mb-1"><button class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#tag-`,
+		tagsFilter = utils.Concat(tagsFilter, `<li class="mb-1"><button type="button" class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#tag-`,
 			alphanum, `-collapse" aria-expanded="true" aria-current="true">`, tagType.TagType, `</button><div class="collapse show" id="tag-`,
 			alphanum, `-collapse"><div class="collapse show" id="forms-collapse"><ul class="list-unstyled fw-normal pb-1 small">`)
 
