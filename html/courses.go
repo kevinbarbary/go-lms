@@ -95,8 +95,8 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	tagsFilter = utils.Concat(`<form method="post" action="/courses/page-`, pageIndex, `"><button class="btn btn-outline-primary btn-sm" type="submit">Filter</button>`, tagsFilter, `</form>`)
 	for _, course := range courseData.Courses {
 		card = utils.Hyper("#", utils.Concat(`<div class="card mx-auto" style="width: 208px;">
-  <div class="card-title"><div class="card-image mx-auto" style="width: 172px;">
-    <img src="`, course.Image, `" class="card-img-top pt-3" alt="`, course.CourseTitle, `" style="width: 172px; height:82px">
+  <div class="card-title"><div class="card-image mx-auto pt-3">
+    <img src="`, course.Image, `" class="card-img-top" alt="`, course.CourseTitle, `">
   </div></div>
   <div class="card-body pt-0">
     <p class="card-text">`, course.CourseTitle, `</p>

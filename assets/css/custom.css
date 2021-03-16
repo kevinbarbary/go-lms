@@ -109,6 +109,17 @@ body {
     color: lightpink;
 }
 
+.card {
+    min-height: 195px;
+}
+.card-image,
+.card-img-top {
+    width: 172px;
+}
+.card-img-top {
+    height: 74px;
+}
+
 .pagination .page-item .page-link,
 .pagination .page-item.disabled .page-link {
     background-color: #f5f5f5;
