@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./api"
-	"./html"
-	"./utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	html "github.com/kevinbarbary/go-lms/html"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"net/http"
 )
 

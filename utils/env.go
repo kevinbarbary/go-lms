@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/joho/godotenv"
+	godotenv "github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"

@@ -12,7 +12,7 @@ func createCookie(name, value string) *http.Cookie {
 	return &http.Cookie{
 		Name:     name,
 		Value:    value,
-		Domain:   "localhost", // @todo - make this work on all domains ("*" ?)
+		Domain:   "localhost" // @todo - make this work on all domains ("*" ?)
 		Path:     "/",
 		MaxAge:   age,
 		HttpOnly: true,
