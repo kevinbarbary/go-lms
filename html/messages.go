@@ -41,10 +41,10 @@ func StyleMessage(message, kind string) string {
 	return utils.Concat(`<div class="alert alert-`, kind, ` alert-dismissible fade show" role="alert">`, message, `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`)
 }
 
-func SetMessage(w http.ResponseWriter, i int) {
-	utils.SaveCookie(w, "msg", strconv.Itoa(i))
+func SetMessage(w http.ResponseWriter, r *http.Request, i int) {
+	utils.SaveCookie(w, "msg", strconv.Itoa(i), utils.GetDomain(r))
 }
 
-func UnsetMessage(w http.ResponseWriter) {
-	utils.DeleteCookie(w, "msg")
+func UnsetMessage(w http.ResponseWriter, r *http.Request) {
+	utils.DeleteCookie(w, "msg", utils.GetDomain(r))
 }

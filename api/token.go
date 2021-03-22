@@ -1,8 +1,8 @@
 package api
 
 import (
-	utils "github.com/kevinbarbary/go-lms/utils"
 	"encoding/json"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"log"
 	"net/http"
 )
@@ -55,13 +55,13 @@ func CheckToken(token, useragent, site, check string) (TokenInfo, Timestamp, str
 	return result, timestamp, newToken, user, err
 }
 
-func saveTokenCookie(w http.ResponseWriter, token string) {
-	utils.SaveCookie(w, "token", token)
+func saveTokenCookie(w http.ResponseWriter, token, domain string) {
+	utils.SaveCookie(w, "token", token, domain)
 }
 
-func SaveToken(w http.ResponseWriter, token string) {
+func SaveToken(w http.ResponseWriter, token, domain string) {
 	if token != "" {
-		saveTokenCookie(w, token)
+		saveTokenCookie(w, token, domain)
 	}
 }
 

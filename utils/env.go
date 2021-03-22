@@ -36,7 +36,7 @@ func Assets(kind string) string {
 	return get(kind, "Assets")
 }
 
-func Domain() string {
+func DomainAndPort() string {
 	a, b := getTwo("Domain", "Port", "Domain")
 	return Concat(a, ":", b)
 }
@@ -58,12 +58,17 @@ func Creds(site string) (string, string) {
 }
 
 func GetMultiSite(r *http.Request) string {
-	site := get("MultiSite", "GetMultiSite")
-	if site == "" {
+	// get the subdomain if Multi-Site, otherwise empty string
+	multi := get("MultiSite", "GetMultiSite")
+	if multi == "" {
 		return ""
 	}
-	domain := strings.Split(r.Host, ".")
-	return domain[0]
+	sub := strings.Split(r.Host, ".")
+	return sub[0]
+}
+
+func GetDomain(r *http.Request) string {
+	return r.Host
 }
 
 func GetSite(r *http.Request) string {

@@ -23,9 +23,9 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 		// get the auth token - first try cookies and if no cookie token found hit the /auth endpoint to get a fresh token
 		token, u := api.Auth(utils.GetSite(r), name, pass, r.UserAgent(), false)
 
-		api.SaveToken(w, token)
+		api.SaveToken(w, token, utils.GetDomain(r))
 		if u != "" {
-			html.SetMessage(w, html.SIGNED_IN)
+			html.SetMessage(w, r, html.SIGNED_IN)
 			http.Redirect(w, r, utils.Concat("/", r.FormValue("path")), 302)
 		}
 
@@ -46,11 +46,11 @@ func signOut(w http.ResponseWriter, r *http.Request) {
 		// i.e. get a new token without a user in (also invalidates the session in the current token so any tokens containing the same session can't be used again)
 		newToken, user := api.Unauth(utils.GetSite(r), token, r.UserAgent())
 
-		api.SaveToken(w, newToken)
+		api.SaveToken(w, newToken, utils.GetDomain(r))
 		if user == "" {
-			html.SetMessage(w, html.SIGNED_OUT)
+			html.SetMessage(w, r, html.SIGNED_OUT)
 		} else {
-			html.SetMessage(w, html.SIGN_OUT_FAIL)
+			html.SetMessage(w, r, html.SIGN_OUT_FAIL)
 		}
 	}
 	http.Redirect(w, r, "/", 302)

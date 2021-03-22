@@ -2,7 +2,7 @@ package utils
 
 import "net/http"
 
-func createCookie(name, value string) *http.Cookie {
+func createCookie(name, value, domain string) *http.Cookie {
 	var age int
 	if value == "" {
 		age = -1
@@ -12,15 +12,15 @@ func createCookie(name, value string) *http.Cookie {
 	return &http.Cookie{
 		Name:     name,
 		Value:    value,
-		Domain:   "localhost" // @todo - make this work on all domains ("*" ?)
+		Domain:   domain,
 		Path:     "/",
 		MaxAge:   age,
 		HttpOnly: true,
 	}
 }
 
-func SaveCookie(w http.ResponseWriter, name, value string) {
-	http.SetCookie(w, createCookie(name, value))
+func SaveCookie(w http.ResponseWriter, name, value, domain string) {
+	http.SetCookie(w, createCookie(name, value, domain))
 }
 
 func GetCookieValue(r *http.Request, name string) (string, error) {
@@ -34,6 +34,6 @@ func GetCookieValue(r *http.Request, name string) (string, error) {
 	return cookie.Value, nil
 }
 
-func DeleteCookie(w http.ResponseWriter, name string) {
-	http.SetCookie(w, createCookie(name, ""))
+func DeleteCookie(w http.ResponseWriter, name, domain string) {
+	http.SetCookie(w, createCookie(name, "", domain))
 }
