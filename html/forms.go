@@ -1,6 +1,6 @@
 package html
 
-import "../utils"
+import utils "github.com/kevinbarbary/go-lms/utils"
 
 func SignIn(username, password, path string) string {
 	var user, pass string

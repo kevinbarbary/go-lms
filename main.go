@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./api"
-	"./html"
-	"./utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	html "github.com/kevinbarbary/go-lms/html"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -107,3 +107,4 @@ func GetError(err error) string {
 	}
 	return utils.Concat(`<span class="error">`, e, `</span>`)
 }
+

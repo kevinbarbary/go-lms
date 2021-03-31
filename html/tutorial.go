@@ -1,8 +1,8 @@
 package html
 
 import (
-	"../api"
-	"../utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"net/url"
 	"strconv"
 )
@@ -40,7 +40,7 @@ func Tutorials(data api.UserEnrolment) (string, string, int, int, int) {
 				}
 			}
 			content = utils.Concat(content, `<div class="tutorial-row" id="tutorial-id-`, strconv.Itoa(tutorial.TutorialID), `">`,
-				utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.Domain(), "/")),
+				utils.Hyper(utils.Concat(tutorial.LaunchURL, "&returnHTTP=1&returnURL=", url.QueryEscape(utils.Concat("//", utils.DomainAndPort(), "/")),
 					strconv.Itoa(data.EnrollID)), utils.Concat(`<div class="border p-2 mb-2"><div class="name">`, tutorial.TutorialTitle,
 					`</div><div class="status">`, status, `</div></div>`)), `</div>`)
 		}
@@ -52,7 +52,7 @@ func Tutorials(data api.UserEnrolment) (string, string, int, int, int) {
 		modalContinue = utils.Concat(`
 <a href="#" class="btn btn-outline-primary btn-sm" id="continue" data-bs-toggle="modal" data-bs-target="#exampleModal" data-url="`,
 			utils.Concat(lastUrl, "&returnHTTP=1&noForceRedirect=0&returnURL=", url.QueryEscape(utils.Concat("//",
-				utils.Domain(), "/parent/")), strconv.Itoa(data.EnrollID)), `">
+				utils.DomainAndPort(), "/parent/")), strconv.Itoa(data.EnrollID)), `">
 Continue
 </a>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

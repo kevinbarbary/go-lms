@@ -1,9 +1,9 @@
 package api
 
 import (
-	"../utils"
 	"bytes"
 	"encoding/json"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"io/ioutil"
 	"log"
 	"net/http"

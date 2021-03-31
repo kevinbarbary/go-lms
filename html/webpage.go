@@ -1,8 +1,8 @@
 package html
 
 import (
-	"../api"
-	"../utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"html/template"
 	"net/http"
 )
@@ -88,7 +88,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 	var body string
 	if message, kind := GetMessage(r); message != "" {
 		body = utils.Concat(body, StyleMessage(message, kind))
-		UnsetMessage(w)
+		UnsetMessage(w, r)
 	}
 	body = utils.Concat(body, content)
 

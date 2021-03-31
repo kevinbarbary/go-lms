@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./api"
-	"./html"
-	"./utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	html "github.com/kevinbarbary/go-lms/html"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func error404(w http.ResponseWriter, r *http.Request, location, info string, cru
 	if err == nil {
 
 		// save the new token to use in the next api call
-		api.SaveToken(w, newToken)
+		api.SaveToken(w, newToken, utils.GetDomain(r))
 
 		if result.LoginID == "" || result.LoginID == user {
 			var pad string

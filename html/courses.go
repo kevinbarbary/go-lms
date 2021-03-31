@@ -1,8 +1,8 @@
 package html
 
 import (
-	"../api"
-	"../utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -62,7 +62,7 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 
 	var pageIndex string
 
-	api.SaveToken(w, newToken)
+	api.SaveToken(w, newToken, utils.GetDomain(r))
 	user = u
 
 	// build breadcrumb

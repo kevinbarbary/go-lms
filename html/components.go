@@ -1,7 +1,7 @@
 package html
 
 import (
-	"../utils"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"strconv"
 	"strings"
 )

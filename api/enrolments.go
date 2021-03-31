@@ -1,7 +1,7 @@
 package api
 
 import (
-	"../utils"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"encoding/json"
 	"log"
 )

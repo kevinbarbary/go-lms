@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./api"
-	"./html"
-	"./utils"
+	api "github.com/kevinbarbary/go-lms/api"
+	html "github.com/kevinbarbary/go-lms/html"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"net/http"
 	"strconv"
 )
@@ -34,7 +34,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 			enrol, newToken, u, now, err := api.UserEnrolments(token, r.UserAgent(), utils.GetSite(r), api.TokenUser())
 			if err == nil {
 
-				api.SaveToken(w, newToken)
+				api.SaveToken(w, newToken, utils.GetDomain(r))
 
 				if u == "" {
 					signIn(w, r, "")
@@ -58,7 +58,7 @@ func learn(w http.ResponseWriter, r *http.Request, enrollId int) {
 			enrol, newToken, u, err := api.UserTutorials(token, r.UserAgent(), utils.GetSite(r), api.TokenUser(), enrollId)
 			if err == nil {
 
-				api.SaveToken(w, newToken)
+				api.SaveToken(w, newToken, utils.GetDomain(r))
 
 				if u == "" {
 					signIn(w, r, strconv.Itoa(enrollId))
