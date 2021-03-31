@@ -1,7 +1,7 @@
 package utils
 
 import (
-	godotenv "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -69,6 +69,10 @@ func GetMultiSite(r *http.Request) string {
 
 func GetDomain(r *http.Request) string {
 	h := r.Host
+	if i := strings.Index(h, ":"); i != -1 {
+		// remove the port
+		return h[:i]
+	}
 	return h
 }
 
