@@ -1,9 +1,9 @@
 package api
 
 import (
-	utils "github.com/kevinbarbary/go-lms/utils"
 	"bytes"
 	"encoding/json"
+	utils "github.com/kevinbarbary/go-lms/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -154,8 +154,6 @@ func request(useragent, method, endpoint, token string, payload Params) (string,
 		request.Header.Set("User-Agent", useragent)
 		if token != "" {
 			request.Header.Set("Authorization", utils.Concat("Bearer ", token))
-log.Print(utils.Concat("API Call endpoint: ", endpoint))
-log.Print(utils.Concat("API Call token: ", token))
 		}
 
 		resp, err := client.Do(request)

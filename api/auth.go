@@ -46,9 +46,5 @@ func authenticate(useragent, site, username, password, token string, retry bool)
 		return "", ""
 	}
 
-log.Print("Auth: ok")
-log.Print(newToken)
-log.Print(user)
-
 	return newToken, user
 }

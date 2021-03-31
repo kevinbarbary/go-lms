@@ -5,7 +5,6 @@ import (
 	html "github.com/kevinbarbary/go-lms/html"
 	utils "github.com/kevinbarbary/go-lms/utils"
 	"net/http"
-	"log"
 )
 
 func signIn(w http.ResponseWriter, r *http.Request, path string) {
@@ -25,10 +24,6 @@ func signIn(w http.ResponseWriter, r *http.Request, path string) {
 		token, u := api.Auth(utils.GetSite(r), name, pass, r.UserAgent(), false)
 
 		api.SaveToken(w, token, utils.GetDomain(r))
-log.Print("saved token")
-log.Print(token)
-log.Print(utils.GetDomain(r))
-log.Print("redirecting")
 		if u != "" {
 			html.SetMessage(w, r, html.SIGNED_IN)
 			http.Redirect(w, r, utils.Concat("/", r.FormValue("path")), 302)

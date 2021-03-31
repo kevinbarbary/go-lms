@@ -2,7 +2,6 @@ package utils
 
 import (
 	"net/http"
-	"log"
 )
 
 func createCookie(name, value, domain string) *http.Cookie {
@@ -13,12 +12,12 @@ func createCookie(name, value, domain string) *http.Cookie {
 		age = 99999
 	}
 	return &http.Cookie{
-		Name:     name,
-		Value:    value,
-		Domain:   domain,
-		Path:     "/",
-		MaxAge:   age,
-//		HttpOnly: true,
+		Name:   name,
+		Value:  value,
+		Domain: domain,
+		Path:   "/",
+		MaxAge: age,
+		//		HttpOnly: true,
 	}
 }
 
@@ -27,9 +26,6 @@ func SaveCookie(w http.ResponseWriter, name, value, domain string) {
 }
 
 func GetCookieValue(r *http.Request, name string) (string, error) {
-log.Print("GetCookieValue...")
-log.Print(r.Host)
-log.Print("...GetCookieValue...")
 	var cookie, err = r.Cookie(name)
 	if err != nil {
 		return "", err
@@ -37,8 +33,6 @@ log.Print("...GetCookieValue...")
 	if cookie.Value == "" {
 		return "", err
 	}
-log.Print(cookie.Value)
-log.Print("...GetCookieValue")
 	return cookie.Value, nil
 }
 
