@@ -38,6 +38,8 @@ func Assets(kind string) string {
 
 func DomainAndPort() string {
 	a, b := getTwo("Domain", "Port", "Domain")
+log.Print("utils DomainAndPort...")
+log.Print(Concat(a, ":", b))
 	return Concat(a, ":", b)
 }
 
@@ -68,7 +70,11 @@ func GetMultiSite(r *http.Request) string {
 }
 
 func GetDomain(r *http.Request) string {
-	return r.Host
+	h := r.Host
+log.Print("utils GetDomain: ", h)
+	return h
+//log.Print("Domain: vlc.corelearn.net")
+//	return "vlc.corelearn.net"
 }
 
 func GetSite(r *http.Request) string {

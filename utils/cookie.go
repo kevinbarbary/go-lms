@@ -1,6 +1,9 @@
 package utils
 
-import "net/http"
+import (
+	"net/http"
+	"log"
+)
 
 func createCookie(name, value, domain string) *http.Cookie {
 	var age int
@@ -15,7 +18,7 @@ func createCookie(name, value, domain string) *http.Cookie {
 		Domain:   domain,
 		Path:     "/",
 		MaxAge:   age,
-		HttpOnly: true,
+//		HttpOnly: true,
 	}
 }
 
@@ -24,6 +27,9 @@ func SaveCookie(w http.ResponseWriter, name, value, domain string) {
 }
 
 func GetCookieValue(r *http.Request, name string) (string, error) {
+log.Print("GetCookieValue...")
+log.Print(r.Host)
+log.Print("...GetCookieValue...")
 	var cookie, err = r.Cookie(name)
 	if err != nil {
 		return "", err
@@ -31,6 +37,8 @@ func GetCookieValue(r *http.Request, name string) (string, error) {
 	if cookie.Value == "" {
 		return "", err
 	}
+log.Print(cookie.Value)
+log.Print("...GetCookieValue")
 	return cookie.Value, nil
 }
 
