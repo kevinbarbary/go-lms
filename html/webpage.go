@@ -29,7 +29,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		title = utils.Concat(title, page.Header)
 	}
 
-	var css, signInOut, menu, menuSpacing, siteItem, learnItem, learnOutline, learnDisabled, coursesOutline, coursesDisabled string
+	var css, signInOut, menu, menuSpacing, siteItem, learnItem, learnOutline, learnDisabled, coursesOutline, coursesDisabled, back string
 
 	multi := utils.GetMultiSite(r)
 
@@ -44,6 +44,10 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		coursesOutline = "outline-"
 		if page.Header == LEARN {
 			learnDisabled = " disabled"
+		} else {
+			back = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="svg-sm" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+</svg> `
 		}
 	case COURSES:
 		learnOutline = "outline-"
@@ -76,7 +80,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 			} else {
 				signInOut = utils.HyperClass("/sign-out", utils.Concat(SIGN_OUT, ": ", user), class)
 			}
-			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learnOutline, `primary btn-sm`, learnDisabled, `">Learn</a>`)
+			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learnOutline, `primary btn-sm`, learnDisabled, `">`, back, `Learn</a>`)
 		}
 
 		menu = utils.Concat(siteItem, `<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,

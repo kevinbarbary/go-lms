@@ -59,6 +59,10 @@ body {
     font-size: 14px;
 }
 
+.svg-sm {
+    vertical-align: -0.2em;
+}
+
 .enrol {
     display: grid;
 }
