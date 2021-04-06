@@ -46,6 +46,8 @@ func Tutorials(data api.UserEnrolment) (string, string, int, int, int) {
 		}
 	}
 
+	content = utils.Concat(content, `<a href="/" class="btn btn-outline-primary btn-sm mt-2">`, _BACK, ` Enrolments`, `</a>`)
+
 	// WIP: launch in modal...
 	var modalContinue string
 	if !lastAccessed.NotSet() {
