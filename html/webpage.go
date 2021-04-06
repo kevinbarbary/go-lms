@@ -121,7 +121,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 	}{
 		title,
 		template.HTML(css),
-		utils.Assets("CSS"),
+		utils.Assets("Version"),
 		template.HTML(utils.Concat(`<span class="breadcrumb-trail breadcrumb-prefix">You are here:</span>`, breadcrumb)),
 		template.HTML(logo),
 		template.HTML(menu),

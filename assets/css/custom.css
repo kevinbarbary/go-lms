@@ -21,6 +21,10 @@ body {
     margin-right: 10px;
 }
 
+.form .btn-text {
+    color: #0d6efd;
+}
+
 #breadcrumb-container,
 #breadcrumb,
 #logo-container {
