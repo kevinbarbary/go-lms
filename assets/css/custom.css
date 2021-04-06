@@ -40,6 +40,14 @@ body {
 .breadcrumb-prefix {
     margin-right: 0.5rem;
 }
+.breadcrumb-item a:link,
+.breadcrumb-item a:visited {
+    text-decoration: none;
+}
+.breadcrumb-item a:hover,
+.breadcrumb-item a:active {
+    text-decoration: underline;
+}
 
 #logo-container {
     float: right;
