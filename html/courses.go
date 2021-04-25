@@ -102,15 +102,16 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	}
 	tagsFilter = utils.Concat(tagsFilter, `</ul></nav>`)
 
-	badge := ""
+	var badge, reset string
 	if filters > 0 {
 		badge = utils.Concat(`s <span class="badge bg-primary">`, strconv.Itoa(filters), `</span>`)
+		reset = ` <a class="btn btn-outline-primary btn-sm" href="/courses">Reset</a>`
 	}
 	tagsFilter = utils.Concat(`<button class="btn btn-outline-primary btn-sm mb-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilter" aria-controls="offcanvasFilter">Filter`, badge, `</button>
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
 	<form method="post" action="/courses/page-`, pageIndex, `">
 		<div class="offcanvas-header">
-			<h5 class="offcanvas-title" id="offcanvasFilterLabel"><button class="btn btn-outline-primary btn-sm" type="submit">Apply Filter</button></h5>
+			<h5 class="offcanvas-title" id="offcanvasFilterLabel"><button class="btn btn-outline-primary btn-sm" type="submit">Apply Filter</button>`, reset, `</h5>
 			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 		<div class="offcanvas-body pt-0">
