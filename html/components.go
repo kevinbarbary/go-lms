@@ -65,12 +65,11 @@ func paginate(index, limit, total int, params string) string {
 		pages = total / limit
 	}
 
-	s := makePageNav(pages, index, 1, params)  // max 7 links
-	m := makePageNav(pages, index, 2, params)  // max 11 links
-	l := makePageNav(pages, index, 3, params)  // max 15 links
-	xl := makePageNav(pages, index, 4, params) // max 19 links
+	s := makePageNav(pages, index, 2, params) // max 11 links
+	m := makePageNav(pages, index, 3, params) // max 15 links
+	l := makePageNav(pages, index, 4, params) // max 19 links
 
-	return utils.Concat(s, m, l, xl)
+	return utils.Concat(`<div class="page-s">`, s, `</div>`, `<div class="page-m">`, m, `</div>`, `<div class="page-l">`, l, `</div>`)
 
 }
 
