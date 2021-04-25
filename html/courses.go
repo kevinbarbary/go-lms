@@ -77,18 +77,24 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	// build filter
 	tagsFilter := `<aside class="sidebar"><nav class="collapse links" id="filter-nav" aria-label="Course Filter"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
 	for _, tagType := range courseData.Tags {
-
+		expand := false
+		items := ""
 		alphanum := utils.AlphaNumeric(tagType.TagType)
-		tagsFilter = utils.Concat(tagsFilter, `<li class="mb-1"><button type="button" class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#tag-`,
-			alphanum, `-collapse" aria-expanded="true" aria-current="true">`, tagType.TagType, `</button><div class="collapse show" id="tag-`,
-			alphanum, `-collapse"><div class="collapse show" id="forms-collapse"><ul class="list-unstyled fw-normal pb-1 small">`)
-
 		for _, tag := range tagType.Tags {
 			_, selected := utils.FindInt(tags, tag.TagID)
-			tagsFilter = utils.Concat(tagsFilter, "<li>", cbx(strconv.Itoa(tag.TagID), tag.Tag, "d-inline-flex rounded", selected), "</li>")
+			expand = expand || selected
+			items = utils.Concat(items, "<li>", cbx(strconv.Itoa(tag.TagID), tag.Tag, "d-inline-flex rounded", selected), "</li>")
 		}
-
-		tagsFilter = utils.Concat(tagsFilter, `</ul></div></li>`)
+		if expand {
+			tagsFilter = utils.Concat(tagsFilter, `<li class="mb-1"><button type="button" class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#tag-`,
+				alphanum, `-collapse" aria-expanded="true" aria-current="true">`, tagType.TagType, `</button><div class="collapse show" id="tag-`,
+				alphanum, `-collapse"><div class="collapse show" id="forms-collapse"><ul class="list-unstyled fw-normal pb-1 small">`)
+		} else {
+			tagsFilter = utils.Concat(tagsFilter, `<li class="mb-1"><button type="button" class="btn d-inline-flex align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#tag-`,
+				alphanum, `-collapse" aria-expanded="false" aria-current="true">`, tagType.TagType, `</button><div class="collapse" id="tag-`,
+				alphanum, `-collapse"><div class="collapse show" id="forms-collapse"><ul class="list-unstyled fw-normal pb-1 small">`)
+		}
+		tagsFilter = utils.Concat(tagsFilter, items, `</ul></div></li>`)
 	}
 	tagsFilter = utils.Concat(tagsFilter, "</ul></nav></aside>")
 
