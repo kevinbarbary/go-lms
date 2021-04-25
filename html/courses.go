@@ -75,14 +75,18 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 	}
 
 	// build filter
-	tagsFilter := `<aside class="sidebar"><nav class="collapse links" id="filter-nav" aria-label="Course Filter"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
+	filters := 0
+	tagsFilter := `<nav class="collapse links" id="filter-nav" aria-label="Course Filter"><ul class="list-unstyled mb-0 py-3 pt-md-1">`
 	for _, tagType := range courseData.Tags {
 		expand := false
 		items := ""
 		alphanum := utils.AlphaNumeric(tagType.TagType)
 		for _, tag := range tagType.Tags {
 			_, selected := utils.FindInt(tags, tag.TagID)
-			expand = expand || selected
+			if selected {
+				filters++
+				expand = true
+			}
 			items = utils.Concat(items, "<li>", cbx(strconv.Itoa(tag.TagID), tag.Tag, "d-inline-flex rounded", selected), "</li>")
 		}
 		if expand {
@@ -96,9 +100,25 @@ func Courses(w http.ResponseWriter, r *http.Request, index int, tags []int) {
 		}
 		tagsFilter = utils.Concat(tagsFilter, items, `</ul></div></li>`)
 	}
-	tagsFilter = utils.Concat(tagsFilter, "</ul></nav></aside>")
+	tagsFilter = utils.Concat(tagsFilter, `</ul></nav>`)
 
-	tagsFilter = utils.Concat(`<form method="post" action="/courses/page-`, pageIndex, `"><button class="btn btn-outline-primary btn-sm" type="submit">Filter</button>`, tagsFilter, `</form>`)
+	badge := ""
+	if filters > 0 {
+		badge = utils.Concat(`s <span class="badge bg-primary">`, strconv.Itoa(filters), `</span>`)
+	}
+	tagsFilter = utils.Concat(`<button class="btn btn-outline-primary btn-sm mb-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilter" aria-controls="offcanvasFilter">Filter`, badge, `</button>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilter" aria-labelledby="offcanvasFilterLabel">
+	<form method="post" action="/courses/page-`, pageIndex, `">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title" id="offcanvasFilterLabel"><button class="btn btn-outline-primary btn-sm" type="submit">Apply Filter</button></h5>
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="offcanvas-body pt-0">
+			`, tagsFilter, `
+		</div>
+	</form>
+</div>`)
+
 	for _, course := range courseData.Courses {
 		card = utils.Hyper("#", utils.Concat(`<div class="card mx-auto" style="width: 208px;">
   <div class="card-title"><div class="card-image mx-auto pt-3">
