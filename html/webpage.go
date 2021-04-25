@@ -41,7 +41,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		css = `<link rel="stylesheet" type="text/css" href="/assets/css/sign-in.css">`
 		coursesOutline = "outline-"
 		if multi != "" {
-			siteItem = utils.Concat(`<a href="/" class="btn btn-primary btn-sm disabled">`, SIGN_IN, ` - `, multi, `</a>`)
+			siteItem = utils.Concat(`<a href="/" class="btn btn-primary btn-sm mb-3 disabled">`, SIGN_IN, ` - `, multi, `</a>`)
 		}
 	case LEARN:
 		coursesOutline = "outline-"
