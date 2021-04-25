@@ -59,7 +59,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 	}
 
 	if page.Kind != PLAIN {
-		class := "btn btn-outline-primary btn-sm"
+		class := "btn btn-outline-primary btn-sm mb-3"
 		if multi != "" {
 			menuSpacing = " ms-3"
 		}
@@ -87,7 +87,7 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 		menu = utils.Concat(siteItem, `<div class="btn-group mb-3`, menuSpacing, `" role="group" aria-label="Menu">`,
 			learnItem, `<a href="/courses" class="btn btn-`, coursesOutline, `primary btn-sm`, coursesDisabled, `">Browse</a></div>`)
 
-		menu = utils.Concat(`<div class="menu"><div class="btn-group mb-3">`, signInOut, `</div>`, menu, `</div>`)
+		menu = utils.Concat(`<div class="menu">`, signInOut, menu, `</div>`)
 	}
 
 	var body string
