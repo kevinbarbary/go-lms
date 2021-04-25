@@ -84,10 +84,10 @@ func Webpage(w http.ResponseWriter, r *http.Request, user string, page Page, bre
 			learnItem = utils.Concat(`<a href="/" class="btn btn-`, learnOutline, `primary btn-sm`, learnDisabled, `">`, back, `Learn</a>`)
 		}
 
-		menu = utils.Concat(siteItem, `<div class="btn-group`, menuSpacing, `" role="group" aria-label="Menu">`,
+		menu = utils.Concat(siteItem, `<div class="btn-group mb-3`, menuSpacing, `" role="group" aria-label="Menu">`,
 			learnItem, `<a href="/courses" class="btn btn-`, coursesOutline, `primary btn-sm`, coursesDisabled, `">Browse</a></div>`)
 
-		menu = utils.Concat(`<div class="menu mb-3">`, signInOut, menu, `</div>`)
+		menu = utils.Concat(`<div class="menu"><div class="btn-group mb-3">`, signInOut, `</div>`, menu, `</div>`)
 	}
 
 	var body string
