@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="LMS using Course-Source RESTful API">
     <title>{{ .Title }}</title>
     <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css?v={{ .Version }}">
     <link rel="stylesheet" type="text/css" href="/assets/css/sr-only.css">
     {{ .Css }}
     <link rel="stylesheet" type="text/css" href="/assets/css/custom.css?v={{ .Version }}">
-    <script src="/assets/js/custom.js?v={{ .Version }}"></script>
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <div id="page" class="container my-4">
@@ -23,5 +23,8 @@
             {{ .Content }}
         </div>
     </div>
+    <script src="/assets/js/custom.js?v={{ .Version }}"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js?v={{ .Version }}"></script>
+    <script src="/assets/js/jquery.1.4.2.min.js"></script>
 </body>
 </html>
